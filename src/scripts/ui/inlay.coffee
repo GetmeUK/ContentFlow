@@ -39,7 +39,7 @@ class ContentFlow.InlayUI extends ContentTools.ComponentUI
         @_body.mount()
 
 
-class InlayBodyUI extends ContentTools.ComponentUI
+class ContentFlow.InlayBodyUI extends ContentTools.ComponentUI
 
     # The body component within an InlayUI component
 
@@ -56,14 +56,14 @@ class InlayBodyUI extends ContentTools.ComponentUI
             child.mount()
 
 
-class InlayHeaderToolsUI extends ContentTools.ComponentUI
+class ContentFlow.InlayHeaderToolsUI extends ContentTools.ComponentUI
 
     # A tools component within an InlayHeaderUI that tools are mounted to
 
     mount: () ->
         super()
 
-        # Create the DOM element for the tools mount it
+        # Create the DOM element for the tools and mount it
         @_domElement = @constructor.createDiv(['ct-inlay__tools'])
         @parent.domElement().appendChild(@_domElement)
         @_addDomEventListeners()
@@ -73,7 +73,7 @@ class InlayHeaderToolsUI extends ContentTools.ComponentUI
             child.mount()
 
 
-class InlayHeaderUI extends ContentTools.ComponentUI
+class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
 
     # The header component within an InlayUI component
 
@@ -123,7 +123,7 @@ class InlayHeaderUI extends ContentTools.ComponentUI
         @_tools.mount()
 
 
-class InlayNoteUI extends ContentTools.ComponentUI
+class ContentFlow.InlayNoteUI extends ContentTools.ComponentUI
 
     # A note displayed within body or a section within the body of the InlayUI
     # component.
@@ -158,7 +158,7 @@ class InlayNoteUI extends ContentTools.ComponentUI
         @_addDomEventListeners()
 
 
-class InlaySectionUI extends ContentTools.ComponentUI
+class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
 
     # A section component with an InlayBodyUI component used to help separate
     # blocks of content into related sections.
@@ -199,7 +199,7 @@ class InlaySectionUI extends ContentTools.ComponentUI
             child.mount()
 
 
-class InlayToolUI extends ContentTools.ComponentUI
+class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
 
     # A tool component mounted to the tools section of an InlayHeaderUI
 

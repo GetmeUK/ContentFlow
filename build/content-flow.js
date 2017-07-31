@@ -10399,6 +10399,16 @@
 }).call(this);
 
 (function() {
+  var ContentFlow, exports;
 
+  ContentFlow = {};
+
+  if (typeof window !== 'undefined') {
+    window.ContentFlow = ContentFlow;
+  }
+
+  if (typeof module !== 'undefined' && module.exports) {
+    exports = module.exports = ContentFlow;
+  }
 
 }).call(this);
