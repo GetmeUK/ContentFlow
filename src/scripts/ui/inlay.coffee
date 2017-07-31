@@ -99,7 +99,7 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
 
         # If no heading value is provided return the current heading
         if heading is undefined
-            return heading
+            return @_heading
 
         # Update the heading
         @_heading = heading
@@ -141,7 +141,7 @@ class ContentFlow.InlayNoteUI extends ContentTools.ComponentUI
 
         # If no content value is provided return the current content
         if content is undefined
-            return content
+            return @_content
 
         # Update the heading
         @_content = content
@@ -176,7 +176,7 @@ class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
 
         # If no heading value is provided return the current heading
         if heading is undefined
-            return heading
+            return @_heading
 
         # Update the heading
         @_heading = heading
