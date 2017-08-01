@@ -122,6 +122,12 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
         # Mount the tools
         @_tools.mount()
 
+    unmount: () ->
+        super()
+
+        # Remove references to other elements
+        this._domHeading = null
+
 
 class ContentFlow.InlayNoteUI extends ContentTools.ComponentUI
 
@@ -197,6 +203,12 @@ class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
         # Mount children
         for child in @children()
             child.mount()
+
+    unmount: () ->
+        super()
+
+        # Remove references to other elements
+        this._domHeading = null
 
 
 class ContentFlow.InlayToolUI extends ContentTools.ComponentUI

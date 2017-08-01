@@ -56,10 +56,11 @@ class ContentFlow.DrawUI extends ContentTools.ComponentUI
         @_state = state
 
         # Remove existing state modifiers
-        @removeCSSClass('ct-draw--open')
-        @removeCSSClass('ct-draw--closed')
+        if @isMounted()
+            @removeCSSClass('ct-draw--open')
+            @removeCSSClass('ct-draw--closed')
 
-        if @state() is 'open'
-            @addCSSClass('ct-draw--open')
-        else
-            @addCSSClass('ct-draw--closed')
+            if @_state is 'open'
+                @addCSSClass('ct-draw--open')
+            else
+                @addCSSClass('ct-draw--closed')

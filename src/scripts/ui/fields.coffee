@@ -98,6 +98,14 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
         # Set the value
         @_domInput.value = value
 
+    unmount: () ->
+        super()
+
+        # Remove references to other elements
+        this._domErrors = null
+        this._domInput = null
+        this._domLabel = null
+
 
 class ContentFlow.BooleanFieldUI extends ContentFlow.FieldUI
 
