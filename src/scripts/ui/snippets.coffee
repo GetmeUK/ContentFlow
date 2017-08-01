@@ -36,8 +36,8 @@ class SnippetUI extends ContentTools.ComponentUI
 
         # Preview image
         @_domPreview = @constructor.createDiv(['ct-snippet__preview'])
-        if @_snippet.type.previewImage
-            bkgURL = "url(#{ @_snippet.type.previewImage })"
+        if @_snippet.type.imageURL
+            bkgURL = "url(#{ @_snippet.type.imageURL })"
             @_domPreview.style.backgroundImage = bkgURL
         @_domElement.appendChild(@_domPreview)
 
