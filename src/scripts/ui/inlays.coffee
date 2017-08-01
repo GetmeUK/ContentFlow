@@ -215,7 +215,7 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
 
     # A tool component mounted to the tools section of an InlayHeaderUI
 
-    constructor: (toolName, tooltip, tooltipPosition='above') ->
+    constructor: (toolName, tooltip) ->
         super()
 
         # The name of the tools (should be the same as the CSS modifier)
@@ -224,9 +224,6 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
         # The tooltip displayed for the tool
         @_tooltip = tooltip
 
-        # The position of the tooltip when displayed relative to the tool
-        @_tooltipPosition = tooltipPosition
-
     # Read-only
 
     toolName: () ->
@@ -234,9 +231,6 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
 
     tooltip: () ->
         return @_tooltip
-
-    tooltipPosition: () ->
-        return @_tooltipPosition
 
     # Methods
 
@@ -247,8 +241,7 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
         @_domElement = @constructor.createDiv([
             'ct-inlay__tool',
             'ct-inlay-tool',
-            "ct-inlay-tool--#{ @_toolName }",
-            "ct-inlay-tool--tooltip-#{ @_tooltipPosition }"
+            "ct-inlay-tool--#{ @_toolName }"
             ])
         @_domElement.setAttribute('data-ct-tooltip', @_tooltip)
         @parent.domElement().appendChild(@_domElement)

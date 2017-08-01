@@ -9,22 +9,27 @@ class ContentFlow.ToogleUI extends ContentTools.WidgetUI
         # The state of the toggle switch
         @_state = 'off'
 
-        # Flag indicating if the toggle switch is currently disabled
-        @_disabled = false
+        # Flag indicating if the toggle switch is currently enabled
+        @_enabled = true
+
+    # Read-only
+
+    enabled: () ->
+        return @_enabled
 
     # Methods
 
     disable: () ->
         # Disable the toggle switch
         if @dispatchEvent(@createEvent('disable'))
-            @_disabled = true
+            @_enabled = false
             if @isMounted()
                 @addCSSClass('ct-toggle--disabled')
 
     enable: () ->
         # Enable the toggle switch
         if @dispatchEvent(@createEvent('enable'))
-            @_disabled = false
+            @_enabled = true
             if @isMounted()
                 @removeCSSClass('ct-toggle--disabled')
 
@@ -112,10 +117,10 @@ class ContentFlow.ToogleUI extends ContentTools.WidgetUI
 
         @_domOff.addEventListener 'click', (ev) =>
             ev.preventDefault()
-            unless @_disabled
+            if @_enabled
                 @off()
 
         @_domOn.addEventListener 'click', (ev) =>
             ev.preventDefault()
-            unless @_disabled
+            if @_enabled
                 @on()
