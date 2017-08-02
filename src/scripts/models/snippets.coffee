@@ -1,5 +1,5 @@
 
-class ContentFlow.Snippet
+class ContentFlow.SnippetModel
 
     # Content flows are made up of snippets of HTML. Snippets allow different
     # prefabricated sections of HTML to be entered into a flow before being
@@ -19,8 +19,19 @@ class ContentFlow.Snippet
         # A table of settings for the snippet
         @settings = settings
 
+    # Class methods
 
-class ContentFlow.SnippetType
+    @fromJSONType: (flow, jsonTypeData) ->
+        # Convert a JSON type object to a `Snippet` instance
+        return new ContentFlow.SnippetModel(
+            jsonTypeData.id,
+            flow.getSnippetTypeById(jsonTypeData.type),
+            jsonTypeData.scope,
+            jsonTypeData.settings
+        )
+
+
+class ContentFlow.SnippetTypeModel
 
     # Snippets are created based on a SnippetType. The snippet type defines
 
@@ -35,3 +46,17 @@ class ContentFlow.SnippetType
 
         # An (optional) preview image for the snippet type
         @imageURL = imageURL
+
+    toSnippet: () ->
+        # Convert the snippet type to a shell snippet
+        return new ContentFlow.Snippet('', this)
+
+    # Class methods
+
+    @fromJSONType: (jsonTypeData) ->
+        # Convert a JSON type object to a `SnippetType` instance
+        return new ContentFlow.SnippetTypeModel(
+            jsonTypeData.id,
+            jsonTypeData.label,
+            jsonTypeData.imageURL
+        )

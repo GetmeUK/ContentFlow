@@ -1,5 +1,18 @@
 
-ContentFlow = {}
+ContentFlow =
+
+    getFlowCls: () ->
+        # Return the flow model class to use for the application
+        return ContentFlow.FlowModel
+
+    getSnippetCls: () ->
+        # Return the snippet model class to use for the application
+        return ContentFlow.SnippetModel
+
+    getSnippetTypeCls: () ->
+        # Return the snippet type model class to use for the application
+        return ContentFlow.SnippetTypeModel
+
 
 # Export the namespace
 

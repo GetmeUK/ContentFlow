@@ -18,15 +18,19 @@ class ContentFlow.BaseAPI
 
     # GET
 
-    listSnippets: (flow) ->
+    getGlobalSnippets: (flow) ->
+        # Request a list of gloval snippets for the given content flow
+        return @_callEndpoint('GET', 'global-snippets', {flow: flow.id})
+
+    getSnippets: (flow) ->
         # Request a list of snippets for the given content flow
         return @_callEndpoint('GET', 'snippets', {flow: flow.id})
 
-    listSnippetTypes: (flow) ->
+    getSnippetTypes: (flow) ->
         # Request a list of snippet types for the given content flow
         return @_callEndpoint('GET', 'snippet-types', {flow: flow.id})
 
-    snippetSettingsForm: (flow, snippet) ->
+    getSnippetSettingsForm: (flow, snippet) ->
         # Request a list of fields for the the snippet settings form
         return @_callEndpoint('GET', 'snippet-settings', {flow: flow.id})
 
