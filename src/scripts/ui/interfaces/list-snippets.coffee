@@ -4,7 +4,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
     # Display a list of snippets for the content flow
 
     constructor: () ->
-        super('')
+        super('Snippets')
 
         # Add `order` and `add` tools to the header
         @_tools = {
@@ -24,9 +24,6 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
 
     init: (flow, ...args) ->
         super()
-
-        # Set the heading for the interface
-        @_header.heading(flow.id)
 
         # Load the list of the snippets within the content flow
         flowMgr = ContentFlow.FlowMgr.get()
@@ -93,3 +90,15 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
             # (Re)mount the body
             @_body.unmount()
             @_body.mount()
+
+    # Read-only
+
+    safeToClose: () ->
+        return true
+
+
+# Register the interface with the content flow manager
+ContentFlow.FlowMgr.getCls().registerInterface(
+    'list-snippets',
+    ContentFlow.ListSnippetsUI
+)

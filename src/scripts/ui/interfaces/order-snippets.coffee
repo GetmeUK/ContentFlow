@@ -113,3 +113,10 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
                 domSnippet,
                 domLastSnippet.nextSibling
             )
+
+
+# Register the interface with the content flow manager
+ContentFlow.FlowMgr.getCls().registerInterface(
+    'order-snippets',
+    ContentFlow.OrderSnippetsUI
+)

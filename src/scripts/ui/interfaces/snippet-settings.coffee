@@ -120,3 +120,9 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
                 if @_fields[k]
                     @_fields[k].value(v)
 
+
+# Register the interface with the content flow manager
+ContentFlow.FlowMgr.getCls().registerInterface(
+    'snippet-settings',
+    ContentFlow.SnippetSettingsUI
+)

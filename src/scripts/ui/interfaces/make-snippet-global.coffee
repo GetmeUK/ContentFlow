@@ -63,3 +63,10 @@ class ContentFlow.MakeSnippetGlobalUI extends ContentFlow.InterfaceUI
         # (Re)mount the body
         @_body.unmount()
         @_body.mount()
+
+
+# Register the interface with the content flow manager
+ContentFlow.FlowMgr.getCls().registerInterface(
+    'make-snippet-global',
+    ContentFlow.MakeSnippetGlobalUI
+)
