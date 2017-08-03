@@ -104,7 +104,7 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
         # Update the heading
         @_heading = heading
         if @isMounted()
-            @_domHeading.textContent = heading
+            @_domHeading.textContent = ContentEdit._(heading)
 
     # Methods
 
@@ -114,7 +114,7 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
         # Create the DOM elements for the header and heading and mount them
         @_domElement = @constructor.createDiv(['ct-inlay__header'])
         @_domHeading = @constructor.createDiv(['ct-inlay__heading'])
-        @_domHeading.textContent = @_heading
+        @_domHeading.textContent = ContentEdit._(@_heading)
         @_domElement.appendChild(@_domHeading)
         @parent.domElement().appendChild(@_domElement)
         @_addDomEventListeners()
@@ -187,7 +187,7 @@ class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
         # Update the heading
         @_heading = heading
         if @isMounted()
-            @_domHeading.textContent = heading
+            @_domHeading.textContent = ContentEdit._(heading)
 
     mount: () ->
         super()
@@ -195,7 +195,7 @@ class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
         # Create the DOM elements for the header and heading and mount them
         @_domElement = @constructor.createDiv(['ct-inlay-section'])
         @_domHeading = @constructor.createDiv(['ct-inlay-section__heading'])
-        @_domHeading.textContent = @_heading
+        @_domHeading.textContent = ContentEdit._(@_heading)
         @_domElement.appendChild(@_domHeading)
         @parent.domElement().appendChild(@_domElement)
         @_addDomEventListeners()
@@ -243,7 +243,7 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
             'ct-inlay-tool',
             "ct-inlay-tool--#{ @_toolName }"
             ])
-        @_domElement.setAttribute('data-ct-tooltip', @_tooltip)
+        @_domElement.setAttribute('data-ct-tooltip', ContentEdit._(@_tooltip))
         @parent.domElement().appendChild(@_domElement)
         @_addDomEventListeners()
 

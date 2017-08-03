@@ -19,6 +19,20 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
         # The initial value of the field
         @_initialValue = initialValue
 
+    # Read-only
+
+    name: () ->
+        return @_name
+
+    label: () ->
+        return @_label
+
+    required: () ->
+        return @_required
+
+    initialValue: () ->
+        return @_initialValue
+
     # Methods
 
     errors: (errors) ->
@@ -46,7 +60,7 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
             # Populate the errors DOM element
             for error in errors
                 domError = @constructor.createDiv(['ct-field__error'])
-                domError.textContent = error
+                domError.textContent = ContentEdit._(error)
                 @_domErrors.appendChild(domError)
             @_domErrors.classList.remove('ct-field-errors__empty')
 
@@ -63,7 +77,7 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
         @_domLabel = document.createElement('label')
         @_domLabel.classList.add('ct-field__label')
         @_domLabel.setAttribute('for', @_name)
-        @_domLabel.textContent = @_label
+        @_domLabel.textContent = ContentEdit._(@_label)
         @_domElement.appendChild(@_domLabel)
 
         # Create the DOM element for the field input
@@ -105,6 +119,36 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
         this._domErrors = null
         this._domInput = null
         this._domLabel = null
+
+    # Class methods
+
+    @fromJSONType: (jsonTypeData) ->
+        # Convert a JSON type object to a field UI component
+
+        switch jsonTypeData['type']
+            when 'boolean'
+                return new ContentFlow.BooleanFieldUI(
+                    jsonTypeData['name'],
+                    jsonTypeData['label'],
+                    jsonTypeData['required'],
+                    jsonTypeData['value']
+                )
+
+            when 'select'
+                return new ContentFlow.SelectFieldUI(
+                    jsonTypeData['name'],
+                    jsonTypeData['label'],
+                    jsonTypeData['required'],
+                    jsonTypeData['value'],
+                    jsonTypeData['choices']
+                )
+
+        return new ContentFlow.TextFieldUI(
+            jsonTypeData['name'],
+            jsonTypeData['label'],
+            jsonTypeData['required'],
+            jsonTypeData['value']
+        )
 
 
 class ContentFlow.BooleanFieldUI extends ContentFlow.FieldUI
@@ -151,16 +195,16 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
 
     # A select field component
 
-    constructor: (name, label, required, initialValue, options) ->
-        super(name, label, required, initialValue, options)
+    constructor: (name, label, required, initialValue, choices) ->
+        super(name, label, required, initialValue, choices)
 
-        # The options for the select field
-        @_options = options
+        # The choices for the select field
+        @_choices = choices
 
     # Read-only
 
-    options: () ->
-        return @_options
+    choices: () ->
+        return @choices
 
     # Methods
 
@@ -174,12 +218,12 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
         @_domInput.setAttribute('id', @_name)
         @_domInput.setAttribute('name', @_name)
 
-        # Add the options
-        for option in @_options
+        # Add the choices
+        for choice in @_choices
             domOption - document.createElement('option')
-            domOption.setAttribute('value', option[0])
-            domOption.textContent = option[1]
-            if @_initialValue is option[0]
+            domOption.setAttribute('value', choice[0])
+            domOption.textContent = ContentEdit._(choice[1])
+            if @_initialValue is choice[0]
                 @_domInput.setAttribute('selected', true)
             @_domInput.appendChild(domOption)
 

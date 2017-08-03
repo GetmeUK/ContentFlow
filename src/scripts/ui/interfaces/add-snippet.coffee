@@ -25,10 +25,7 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
         # flow.
         flowMgr = ContentFlow.FlowMgr.get()
         result = flowMgr.api().getGlobalSnippets(flowMgr.flow())
-        result.addEventListener 'readystatechange', (ev) =>
-            unless ev.target.readyState is 4
-                return
-
+        result.addEventListener 'load', (ev) =>
             flow = ContentFlow.FlowMgr.get().flow()
 
             # Unpack the response

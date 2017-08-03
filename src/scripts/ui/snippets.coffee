@@ -57,24 +57,33 @@ class SnippetUI extends ContentTools.ComponentUI
             @_domSettingsTool = @constructor.createDiv([
                 'ct-snippet__tool',
                 'ct-snippet__tool--settings'
-                ])
-            @_domSettingsTool.setAttribute('data-ct-tooltip', 'Settings')
+            ])
+            @_domSettingsTool.setAttribute(
+                'data-ct-tooltip',
+                ContentEdit._('Settings')
+            )
             @_domTools.appendChild(@_domSettingsTool)
 
             # Scope
             @_domScopeTool = @constructor.createDiv([
                 'ct-snippet__tool',
                 'ct-snippet__tool--scope'
-                ])
-            @_domScopeTool.setAttribute('data-ct-tooltip', 'Scope')
+            ])
+            @_domScopeTool.setAttribute(
+                'data-ct-tooltip',
+                ContentEdit._('Scope')
+            )
             @_domTools.appendChild(@_domScopeTool)
 
             # Delete
             @_domDeleteTool = @constructor.createDiv([
                 'ct-snippet__tool',
                 'ct-snippet__tool--delete'
-                ])
-            @_domDeleteTool.setAttribute('data-ct-tooltip', 'Delete')
+            ])
+            @_domDeleteTool.setAttribute(
+                'data-ct-tooltip',
+                ContentEdit._('Delete')
+            )
             @_domTools.appendChild(@_domDeleteTool)
 
             @_domElement.appendChild(@_domTools)

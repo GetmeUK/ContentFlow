@@ -31,9 +31,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
         # Load the list of the snippets within the content flow
         flowMgr = ContentFlow.FlowMgr.get()
         result = flowMgr.api().getSnippets(flowMgr.flow())
-        result.addEventListener 'readystatechange', (ev) =>
-            unless ev.target.readyState is 4
-                return
+        result.addEventListener 'load', (ev) =>
 
             # Unpack the response
             payload = JSON.parse(ev.target.responseText)
@@ -44,7 +42,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
 
             # Add snippets
             flow = ContentFlow.FlowMgr.get().flow()
-            snippetCls = ContentFlow.getSnippetCls()
+            snippetCls = ContentFlow.getSnippetCls(flow)
             for snippetData of payload.snippets
                 snippet = snippetCls.fromJSONType(flow, snippetData)
                 @_body.attach(new ContentFlow.SnippetUI(snippet, 'manage'))

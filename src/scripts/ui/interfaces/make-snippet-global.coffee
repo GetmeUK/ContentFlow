@@ -16,9 +16,50 @@ class ContentFlow.MakeSnippetGlobalUI extends ContentFlow.InterfaceUI
 
         # Handle interactions
 
+        # Confirm
         @_tools.confirm.addEventListener 'click', (ev) =>
-            # @@ START HERE - Define the code to call the api to make a
-            # snippet global
 
+            # Call the API to request the snippet is made global
+            flowMgr = ContentFlow.FlowMgr.get()
+            result = flowMgr.api().changeSnippetScope(
+                flowMgr.flow(),
+                @_snippet,
+                'global'
+            )
+            result.addEventListener 'load', (ev) =>
+
+                # Unpack the response
+                payload = JSON.parse(ev.target.responseText)
+
+                # Handle the response
+                if response.status is 'success'
+                    ContentFlow.FlowMgr.get().loadInterface('list-snippets')
+                else
+                    @_labelField.errors([response.payload.reason])
+
+        # Cancel
         @_tools.cancel.addEventListener 'click', (ev) =>
+            ContentFlow.FlowMgr.get().loadInterface('list-snippets')
 
+    init: (snippet) ->
+        super()
+
+        # The snippet to change the scope of
+        @_snippet = snippet
+
+        # Global snippets require a unique label so we present the user with a
+        # field to enter a label in.
+        @_body.attach(@_labelField)
+
+        # Provide some context on global snippets to the user
+        note = new ContentFlow.InlayNoteUI(ContentEdit._('''
+            Once you make a snippet global it can be dragged into other pages
+            and changes made to the snippet&apos;s content or settings will be
+            applied to all instances of the snippet.
+            '''
+        ))
+        @_body.attach(note)
+
+        # (Re)mount the body
+        @_body.unmount()
+        @_body.mount()
