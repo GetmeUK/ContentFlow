@@ -44,6 +44,14 @@ class ContentFlow.BaseAPI
             {flow: flow.id, snippet_type: snippetType.id}
         )
 
+    addGlobalSnippet: (flow, globalSnippet) ->
+        # Add a global snippet to the content flow
+        return @_callEndpoint(
+            'POST',
+            'add-global-snippet',
+            {flow: flow.id, global_snippet: globalSnippet.name}
+        )
+
     changeSnippetScope: (flow, snippet, scope) ->
         # Change the scope of the given snippet
         return @_callEndpoint(

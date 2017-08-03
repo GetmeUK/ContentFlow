@@ -18,6 +18,9 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
 
         # Confirm
         @_tools.confirm.addEventListener 'click', (ev) =>
+
+            # Call the API to request the new order for the snippets within the
+            # content flows.
             flowMgr = ContentFlow.FlowMgr.get()
             result = flowMgr.api().orderSnippets(
                 flowMgr.flow(),
@@ -77,6 +80,8 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
                     id = ContentFlow.getSnippetIdFromDOMElement(child)
                     @_newSnippetOrder.push(@_snippets[id])
                 @_orderSnippetsOnPage(@_newSnippetOrder)
+
+    # Methods
 
     unmount: () ->
         super()
