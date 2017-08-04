@@ -9,20 +9,65 @@ class _FlowMgr extends ContentTools.ComponentUI
     constructor: () ->
         super()
 
+        # The API instance used by the manager
+        @_api = null
+
         # The content flow currently being managed
         @_flow = null
 
         # Flag indicating if the app is currently open
         @_open = false
 
-        # @@ flowSelect, toggle, draw
+        # Attach draw, flows and toggle
+        @_draw = new ContentFlow.DrawUI()
+        @attach(@_draw)
 
-    init: (queryOrDOMElements, namingProp='data-cf-flow') ->
+        @_flows = new ContentFlow.FlowsUI()
+        @draw.attach(@_flows)
+
+        @_toggle = new ContentFlow.ToggleUI()
+        @attach(@_toggle)
+
+        # Handle interactions
+
+        @_flows.addEventListener 'select', (ev) =>
+            @flow(ev.detail().flow)
+
+    init: (queryOrDOMElements, idProp='data-cf-flow', api=null) ->
         # Initialize the manager
+        editor = ContentTools.EditorApp.get()
 
-        # @@ Select content flows within the page
+        # Set the API
+        @_api = api or ContentFlow.BaseAPI()
+
+        # Select content flows within the page
+        @_domFlows = queryOrDOMElements
+        if typeof queryOrDOMElements == 'string' or
+                queryOrDOMElements instanceof String
+            @_domFlows = document.querySelectorAll(@_domFlows)
+
+        # Handle toggling the manager open/closed
+        @_toggle.addEventListener 'open', (ev) =>
+            @open()
+
+        @_toggle.addEventListener 'close', (ev) =>
+            @close()
+
+        # Hide the toggle when the editor is active and show it when not
+        editor.addEventListener 'start', (ev) =>
+            @_toggle.hide()
+
+        editor.addEventListener 'stop', (ev) =>
+            @_toggle.show()
+
+        # Mount the manager within the DOM
+        @mount()
+        @_toggle.show()
 
     # Read-only
+
+    api: () ->
+        return @_api
 
     isOpen: () ->
         return @_open
@@ -42,6 +87,18 @@ class _FlowMgr extends ContentTools.ComponentUI
 
     flow: (flow) ->
         # Get/set the current content flow being managed
+
+        # If no flow is provided return the current flow
+        if flow is undefined
+            return flow
+
+        # If the flow hasn't changed there's nothing to do so return
+        if @flow is flow
+            return
+
+        # Update the flow and load the list snippets interface
+        @_flow = flow
+        ContentFlow.FlowMgr.get().loadInterface('list-snippets')
 
     loadInterface: (name, ...args) ->
         # Load an interface

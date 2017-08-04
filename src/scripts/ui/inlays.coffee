@@ -9,11 +9,11 @@ class ContentFlow.InlayUI extends ContentTools.ComponentUI
         # Inlays are made up of a head and body section which we add below.
 
         # Attach the header component to the inlay
-        @_header = new InlayHeaderUI(heading)
+        @_header = new ContentFlow.InlayHeaderUI(heading)
         @attach(@_header)
 
         # Attach the body component to the inlay
-        @_body = new InlayHeaderUI()
+        @_body = new ContentFlow.InlayHeaderUI()
         @attach(@_body)
 
     # Read-only
@@ -66,7 +66,7 @@ class ContentFlow.InlayHeaderToolsUI extends ContentTools.ComponentUI
         # Create the DOM element for the tools and mount it
         @_domElement = @constructor.createDiv(['ct-inlay__tools'])
         @parent.domElement().appendChild(@_domElement)
-        @_addDomEventListeners()
+        @_addDOMEventListeners()
 
         # Mount children
         for child in @children()
@@ -84,7 +84,7 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
         @_heading = heading
 
         # Attach a tools component to allow tools to be mounted in the header
-        @_tools = new InlayHeaderToolsUI()
+        @_tools = new ContentFlow.InlayHeaderToolsUI()
         @attach(@_tools)
 
     # Read-only
@@ -117,7 +117,7 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
         @_domHeading.textContent = ContentEdit._(@_heading)
         @_domElement.appendChild(@_domHeading)
         @parent.domElement().appendChild(@_domElement)
-        @_addDomEventListeners()
+        @_addDOMEventListeners()
 
         # Mount the tools
         @_tools.mount()
@@ -161,7 +161,7 @@ class ContentFlow.InlayNoteUI extends ContentTools.ComponentUI
         @_domElement = @constructor.createDiv(['ct-inlay-note'])
         @_domElement.innerHTML = @_content
         @parent.domElement().appendChild(@_domElement)
-        @_addDomEventListeners()
+        @_addDOMEventListeners()
 
 
 class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
@@ -198,7 +198,7 @@ class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
         @_domHeading.textContent = ContentEdit._(@_heading)
         @_domElement.appendChild(@_domHeading)
         @parent.domElement().appendChild(@_domElement)
-        @_addDomEventListeners()
+        @_addDOMEventListeners()
 
         # Mount children
         for child in @children()
@@ -245,7 +245,7 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
             ])
         @_domElement.setAttribute('data-ct-tooltip', ContentEdit._(@_tooltip))
         @parent.domElement().appendChild(@_domElement)
-        @_addDomEventListeners()
+        @_addDOMEventListeners()
 
     # Private methods
 

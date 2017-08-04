@@ -1,6 +1,12 @@
 
 ContentFlow =
 
+    dimSnippetDOMElement: (flow, snippet) ->
+        # Remove the highlight from a snippet within the page
+        element = ContentFlow.getSnippetDOMElement(flow, snippet)
+        if element
+            element.classList.remove('cf-snippet--highlight')
+
     getFlowCls: () ->
         # Return the content flow model class to use for the application
         return ContentFlow.FlowModel
@@ -28,6 +34,12 @@ ContentFlow =
     getSnippetTypeCls: (flow) ->
         # Return the snippet type model class to use for the application
         return ContentFlow.SnippetTypeModel
+
+    highlightSnippetDOMElement: (flow, snippet) ->
+        # Highlight a snippet within the page
+        element = ContentFlow.getSnippetDOMElement(flow, snippet)
+        if element
+            element.classList.add('cf-snippet--highlight')
 
 
 # Export the namespace

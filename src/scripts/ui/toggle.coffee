@@ -54,7 +54,7 @@ class ContentFlow.ToogleUI extends ContentTools.WidgetUI
             ])
         @_domElement.appendChild(@_domOn)
         @parent.domElement().appendChild(@_domElement)
-        @_addDomEventListeners()
+        @_addDOMEventListeners()
 
     off: () ->
         # Switch the toggle switch to the 'off' state
