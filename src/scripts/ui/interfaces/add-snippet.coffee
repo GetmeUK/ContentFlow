@@ -9,7 +9,7 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
 
         # Add `cancel` tool to the header
         @_tools = {
-            cancel: new ContentFlow.InlayTooUI('order', 'Order', true)
+            cancel: new ContentFlow.InlayToolUI('order', 'Order', true)
         }
         @_header.tools().attach(@_tools.cancel)
 

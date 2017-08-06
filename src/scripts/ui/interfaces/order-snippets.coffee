@@ -8,8 +8,8 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
 
         # Add `confirm` and `cancel` tools to the header
         @_tools = {
-            confirm: new ContentFlow.InlayTooUI('confirm', 'Confirm', true),
-            cancel: new ContentFlow.InlayTooUI('cancel', 'Cancel', true)
+            confirm: new ContentFlow.InlayToolUI('confirm', 'Confirm', true),
+            cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
         }
         @_header.tools().attach(@_tools.confirm)
         @_header.tools().attach(@_tools.cancel)

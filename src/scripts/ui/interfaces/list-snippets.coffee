@@ -8,8 +8,8 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
 
         # Add `order` and `add` tools to the header
         @_tools = {
-            order: new ContentFlow.InlayTooUI('order', 'Order', true),
-            add: new ContentFlow.InlayTooUI('add', 'Add', true)
+            order: new ContentFlow.InlayToolUI('order', 'Order', true),
+            add: new ContentFlow.InlayToolUI('add', 'Add', true)
         }
         @_header.tools().attach(@_tools.order)
         @_header.tools().attach(@_tools.add)

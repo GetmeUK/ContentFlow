@@ -96,14 +96,75 @@ class ContentFlow.BaseAPI
             when 'get'
                 pairs = Object.keys(params).map (p) ->
                     return [p, params[p]].map(encodeURIComponent).join('=')
-                paramsStr "?#{ pairs.join("&") }"
+                paramsStr = "?#{ pairs.join("&") }"
 
             when 'delete', 'post', 'post'
                 formData = new FormData()
                 for k, v of params
                     formData.append(k, v)
 
-        xhr.open(method, '#{ @baseURL }#{ endpoint }#{ paramsStr }')
+        xhr.open(method, "#{ @baseURL }#{ endpoint }#{ paramsStr }")
         xhr.send()
 
         return xhr
+
+
+# Mock API classes
+
+class MockRequest
+
+    constructor: (responseText) ->
+        # The response to the request
+        @_responseText = responseText
+
+        # The listener to call with the response
+        @_listener = null
+
+        # Create a mock load event
+        mockLoad = () =>
+            if @_listener
+                @_listener({target: {responseText: responseText}})
+
+        setTimeout(mockLoad, 0)
+
+    addEventListener: (eventType, listener) ->
+        # Fake handler for binding event listeners to the request (only
+        # supports 'load' event).
+        @_listener = listener
+
+
+class ContentFlow.MockAPI extends ContentFlow.BaseAPI
+
+    # A mock API that returns results than can be tested with
+
+    constructor: (baseURL='/', baseParams={}) ->
+        super(baseURL='/', baseParams={})
+
+        # A list of globals snippets available to the flow
+        @_globalSnippets = {
+            'article-body': []
+        }
+
+        # A list of snippets in the flow
+        @_snippets = {
+            'article-body': []
+        }
+
+        # A list of snippet types available to the flow
+        @_snippetTypes = {
+            'article-body': []
+        }
+
+    # Private methods
+
+    _callEndpoint: (method, endpoint, params={}) ->
+        # Fake the response of calling a real API
+        switch endpoint
+            when 'snippets'
+                return @_mockResponse({'snippets': @_snippets})
+
+    _mockResponse: (payload) ->
+        # Shortcut for building a mock successful API request/response
+        return new MockRequest(
+            JSON.stringify({'status': 'success', 'payload': payload})
+        )

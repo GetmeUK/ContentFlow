@@ -31,16 +31,17 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
         # Set the new list of flows
         @_flows = flows
 
-        # Remove existing select options
-        while @_domSelect.options.length > 0
-            @_domSelect.remove(0)
+        if @isMounted()
+            # Remove existing select options
+            while @_domSelect.options.length > 0
+                @_domSelect.remove(0)
 
-        # Add new options inline with list of flows provided
-        for flow in @_flows
-            domOption = document.createElement('option')
-            domOption.setAttribute('value', flow.id)
-            domOption.textContent = flow.id
-            @_domSelect.appendChild(domOption)
+            # Add new options inline with list of flows provided
+            for flow in @_flows
+                domOption = document.createElement('option')
+                domOption.setAttribute('value', flow.id)
+                domOption.textContent = flow.id
+                @_domSelect.appendChild(domOption)
 
     mount: () ->
         super()

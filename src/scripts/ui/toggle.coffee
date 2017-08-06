@@ -41,7 +41,7 @@ class ContentFlow.ToggleUI extends ContentTools.WidgetUI
         @_domElement = @constructor.createDiv([
             'ct-widget',
             'ct-toggle',
-            'ct-toggle--closed'
+            'ct-toggle--off'
             ])
         @_domOff = @constructor.createDiv([
             'ct-toggle__button'
@@ -63,7 +63,7 @@ class ContentFlow.ToggleUI extends ContentTools.WidgetUI
 
     on: () ->
         # Switch the toggle switch to the 'on' state
-        if @dispathEvent(@createEvent('on'))
+        if @dispatchEvent(@createEvent('on'))
             @state('on')
 
     state: (state) ->
@@ -81,18 +81,18 @@ class ContentFlow.ToggleUI extends ContentTools.WidgetUI
         unless @dispatchEvent(@createEvent('statechange', {state: state}))
             return
 
-        # Modify the draw state
+        # Modify the toggle state
         @_state = state
 
         # Remove existing state modifiers
         if @isMounted()
-            @removeCSSClass('ct-draw--off')
-            @removeCSSClass('ct-draw--on')
+            @removeCSSClass('ct-toggle--off')
+            @removeCSSClass('ct-toggle--on')
 
             if @_state is 'on'
-                @addCSSClass('ct-draw--on')
+                @addCSSClass('ct-toggle--on')
             else
-                @addCSSClass('ct-draw--off')
+                @addCSSClass('ct-toggle--off')
 
     toggle: () ->
         # Togg the state of the switch

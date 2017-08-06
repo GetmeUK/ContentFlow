@@ -42,7 +42,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         editor = ContentTools.EditorApp.get()
 
         # Set the API
-        @_api = api or ContentFlow.BaseAPI()
+        @_api = api or new ContentFlow.BaseAPI()
 
         # Select content flows within the page
         @_domFlows = queryOrDOMElements
@@ -50,11 +50,17 @@ class _FlowMgr extends ContentTools.ComponentUI
                 queryOrDOMElements instanceof String
             @_domFlows = document.querySelectorAll(@_domFlows)
 
+        # Convert the flows found in the DOM into models and populate the flow
+        flows = []
+        for domFlow in @_domFlows
+            flows.push(new ContentFlow.FlowModel(domFlow.getAttribute(idProp)))
+        @_flows.flows(flows)
+
         # Handle toggling the manager open/closed
-        @_toggle.addEventListener 'open', (ev) =>
+        @_toggle.addEventListener 'on', (ev) =>
             @open()
 
-        @_toggle.addEventListener 'close', (ev) =>
+        @_toggle.addEventListener 'off', (ev) =>
             @close()
 
         # Hide the toggle when the editor is active and show it when not
@@ -68,6 +74,9 @@ class _FlowMgr extends ContentTools.ComponentUI
         if @_domFlows.length > 0
             @mount()
             @_toggle.show()
+
+            # Select the first flow found
+            @flow(flows[0])
 
     # Read-only
 
@@ -95,10 +104,10 @@ class _FlowMgr extends ContentTools.ComponentUI
 
         # If no flow is provided return the current flow
         if flow is undefined
-            return flow
+            return @_flow
 
         # If the flow hasn't changed there's nothing to do so return
-        if @flow is flow
+        if @_flow is flow
             return
 
         # Update the flow and load the list snippets interface
@@ -109,7 +118,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         # Load an interface
 
         # Find the named interface
-        uiInterface = @constructor._uiInterfaces[name]
+        uiInterface = new @constructor._uiInterfaces[name]()
         unless uiInterface
             return
 

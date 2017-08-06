@@ -10399,7 +10399,7 @@
 }).call(this);
 
 (function() {
-  var ContentFlow, SnippetUI, exports, _FlowMgr,
+  var ContentFlow, MockRequest, SnippetUI, exports, _FlowMgr,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
@@ -10474,7 +10474,7 @@
     }
 
     _FlowMgr.prototype.init = function(queryOrDOMElements, idProp, api) {
-      var editor;
+      var domFlow, editor, flows, _i, _len, _ref;
       if (queryOrDOMElements == null) {
         queryOrDOMElements = '[data-cf-flow]';
       }
@@ -10485,17 +10485,24 @@
         api = null;
       }
       editor = ContentTools.EditorApp.get();
-      this._api = api || ContentFlow.BaseAPI();
+      this._api = api || new ContentFlow.BaseAPI();
       this._domFlows = queryOrDOMElements;
       if (typeof queryOrDOMElements === 'string' || queryOrDOMElements instanceof String) {
         this._domFlows = document.querySelectorAll(this._domFlows);
       }
-      this._toggle.addEventListener('open', (function(_this) {
+      flows = [];
+      _ref = this._domFlows;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        domFlow = _ref[_i];
+        flows.push(new ContentFlow.FlowModel(domFlow.getAttribute(idProp)));
+      }
+      this._flows.flows(flows);
+      this._toggle.addEventListener('on', (function(_this) {
         return function(ev) {
           return _this.open();
         };
       })(this));
-      this._toggle.addEventListener('close', (function(_this) {
+      this._toggle.addEventListener('off', (function(_this) {
         return function(ev) {
           return _this.close();
         };
@@ -10512,7 +10519,8 @@
       })(this));
       if (this._domFlows.length > 0) {
         this.mount();
-        return this._toggle.show();
+        this._toggle.show();
+        return this.flow(flows[0]);
       }
     };
 
@@ -10534,9 +10542,9 @@
 
     _FlowMgr.prototype.flow = function(flow) {
       if (flow === void 0) {
-        return flow;
+        return this._flow;
       }
-      if (this.flow === flow) {
+      if (this._flow === flow) {
         return;
       }
       this._flow = flow;
@@ -10546,7 +10554,7 @@
     _FlowMgr.prototype.loadInterface = function() {
       var args, child, name, uiInterface;
       name = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      uiInterface = this.constructor._uiInterfaces[name];
+      uiInterface = new this.constructor._uiInterfaces[name]();
       if (!uiInterface) {
         return;
       }
@@ -10734,7 +10742,7 @@
           pairs = Object.keys(params).map(function(p) {
             return [p, params[p]].map(encodeURIComponent).join('=');
           });
-          paramsStr("?" + (pairs.join("&")));
+          paramsStr = "?" + (pairs.join("&"));
           break;
         case 'delete':
         case 'post':
@@ -10745,7 +10753,7 @@
             formData.append(k, v);
           }
       }
-      xhr.open(method, '#{ @baseURL }#{ endpoint }#{ paramsStr }');
+      xhr.open(method, "" + this.baseURL + endpoint + paramsStr);
       xhr.send();
       return xhr;
     };
@@ -10753,6 +10761,78 @@
     return BaseAPI;
 
   })();
+
+  MockRequest = (function() {
+    function MockRequest(responseText) {
+      var mockLoad;
+      this._responseText = responseText;
+      this._listener = null;
+      mockLoad = (function(_this) {
+        return function() {
+          if (_this._listener) {
+            return _this._listener({
+              target: {
+                responseText: responseText
+              }
+            });
+          }
+        };
+      })(this);
+      setTimeout(mockLoad, 0);
+    }
+
+    MockRequest.prototype.addEventListener = function(eventType, listener) {
+      return this._listener = listener;
+    };
+
+    return MockRequest;
+
+  })();
+
+  ContentFlow.MockAPI = (function(_super) {
+    __extends(MockAPI, _super);
+
+    function MockAPI(baseURL, baseParams) {
+      if (baseURL == null) {
+        baseURL = '/';
+      }
+      if (baseParams == null) {
+        baseParams = {};
+      }
+      MockAPI.__super__.constructor.call(this, baseURL = '/', baseParams = {});
+      this._globalSnippets = {
+        'article-body': []
+      };
+      this._snippets = {
+        'article-body': []
+      };
+      this._snippetTypes = {
+        'article-body': []
+      };
+    }
+
+    MockAPI.prototype._callEndpoint = function(method, endpoint, params) {
+      if (params == null) {
+        params = {};
+      }
+      switch (endpoint) {
+        case 'snippets':
+          return this._mockResponse({
+            'snippets': this._snippets
+          });
+      }
+    };
+
+    MockAPI.prototype._mockResponse = function(payload) {
+      return new MockRequest(JSON.stringify({
+        'status': 'success',
+        'payload': payload
+      }));
+    };
+
+    return MockAPI;
+
+  })(ContentFlow.BaseAPI);
 
   ContentFlow.FlowModel = (function() {
     function FlowModel(id, snippetTypes) {
@@ -11125,19 +11205,21 @@
         return;
       }
       this._flows = flows;
-      while (this._domSelect.options.length > 0) {
-        this._domSelect.remove(0);
+      if (this.isMounted()) {
+        while (this._domSelect.options.length > 0) {
+          this._domSelect.remove(0);
+        }
+        _ref = this._flows;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          flow = _ref[_i];
+          domOption = document.createElement('option');
+          domOption.setAttribute('value', flow.id);
+          domOption.textContent = flow.id;
+          _results.push(this._domSelect.appendChild(domOption));
+        }
+        return _results;
       }
-      _ref = this._flows;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        flow = _ref[_i];
-        domOption = document.createElement('option');
-        domOption.setAttribute('value', flow.id);
-        domOption.textContent = flow.id;
-        _results.push(this._domSelect.appendChild(domOption));
-      }
-      return _results;
     };
 
     FlowsUI.prototype.mount = function() {
@@ -11561,7 +11643,7 @@
 
     ToggleUI.prototype.mount = function() {
       ToggleUI.__super__.mount.call(this);
-      this._domElement = this.constructor.createDiv(['ct-widget', 'ct-toggle', 'ct-toggle--closed']);
+      this._domElement = this.constructor.createDiv(['ct-widget', 'ct-toggle', 'ct-toggle--off']);
       this._domOff = this.constructor.createDiv(['ct-toggle__button', 'ct-toggle__button--off']);
       this._domElement.appendChild(this._domOff);
       this._domOn = this.constructor.createDiv(['ct-toggle__button', 'ct-toggle__button--on']);
@@ -11577,7 +11659,7 @@
     };
 
     ToggleUI.prototype.on = function() {
-      if (this.dispathEvent(this.createEvent('on'))) {
+      if (this.dispatchEvent(this.createEvent('on'))) {
         return this.state('on');
       }
     };
@@ -11596,12 +11678,12 @@
       }
       this._state = state;
       if (this.isMounted()) {
-        this.removeCSSClass('ct-draw--off');
-        this.removeCSSClass('ct-draw--on');
+        this.removeCSSClass('ct-toggle--off');
+        this.removeCSSClass('ct-toggle--on');
         if (this._state === 'on') {
-          return this.addCSSClass('ct-draw--on');
+          return this.addCSSClass('ct-toggle--on');
         } else {
-          return this.addCSSClass('ct-draw--off');
+          return this.addCSSClass('ct-toggle--off');
         }
       }
     };
@@ -11667,7 +11749,7 @@
     function AddSnippetUI() {
       AddSnippetUI.__super__.constructor.call(this, 'Add');
       this._tools = {
-        cancel: new ContentFlow.InlayTooUI('order', 'Order', true)
+        cancel: new ContentFlow.InlayToolUI('order', 'Order', true)
       };
       this._header.tools().attach(this._tools.cancel);
       this._tools.cancel.addEventListener('click', (function(_this) {
@@ -11749,8 +11831,8 @@
     function ListSnippetsUI() {
       ListSnippetsUI.__super__.constructor.call(this, 'Snippets');
       this._tools = {
-        order: new ContentFlow.InlayTooUI('order', 'Order', true),
-        add: new ContentFlow.InlayTooUI('add', 'Add', true)
+        order: new ContentFlow.InlayToolUI('order', 'Order', true),
+        add: new ContentFlow.InlayToolUI('add', 'Add', true)
       };
       this._header.tools().attach(this._tools.order);
       this._header.tools().attach(this._tools.add);
@@ -11834,8 +11916,8 @@
     function MakeSnippetGlobalUI() {
       MakeSnippetGlobalUI.__super__.constructor.call(this, 'Make global');
       this._tools = {
-        confirm: new ContentFlow.InlayTooUI('confirm', 'Confirm', true),
-        cancel: new ContentFlow.InlayTooUI('cancel', 'Cancel', true)
+        confirm: new ContentFlow.InlayToolUI('confirm', 'Confirm', true),
+        cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
       };
       this._header.tools().attach(this._tools.confirm);
       this._header.tools().attach(this._tools.cancel);
@@ -11885,8 +11967,8 @@
     function MakeSnippetLocaUI() {
       MakeSnippetLocaUI.__super__.constructor.call(this, 'Make local');
       this._tools = {
-        confirm: new ContentFlow.InlayTooUI('confirm', 'Confirm', true),
-        cancel: new ContentFlow.InlayTooUI('cancel', 'Cancel', true)
+        confirm: new ContentFlow.InlayToolUI('confirm', 'Confirm', true),
+        cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
       };
       this._header.tools().attach(this._tools.confirm);
       this._header.tools().attach(this._tools.cancel);
@@ -11929,8 +12011,8 @@
     function OrderSnippetsUI() {
       OrderSnippetsUI.__super__.constructor.call(this, 'Order');
       this._tools = {
-        confirm: new ContentFlow.InlayTooUI('confirm', 'Confirm', true),
-        cancel: new ContentFlow.InlayTooUI('cancel', 'Cancel', true)
+        confirm: new ContentFlow.InlayToolUI('confirm', 'Confirm', true),
+        cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
       };
       this._header.tools().attach(this._tools.confirm);
       this._header.tools().attach(this._tools.cancel);
@@ -12033,8 +12115,8 @@
     function SnippetSettingsUI() {
       SnippetSettingsUI.__super__.constructor.call(this, 'Settings');
       this._tools = {
-        confirm: new ContentFlow.InlayTooUI('confirm', 'Confirm', true),
-        cancel: new ContentFlow.InlayTooUI('cancel', 'Cancel', true)
+        confirm: new ContentFlow.InlayToolUI('confirm', 'Confirm', true),
+        cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
       };
       this._header.tools().attach(this._tools.confirm);
       this._header.tools().attach(this._tools.cancel);

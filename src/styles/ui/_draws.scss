@@ -1,0 +1,31 @@
+$draw-width: 250px;
+
+.ct-draw {
+    background-color: #fff;
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.35), inset -1px 0 0 0 rgba(#fff, 0.5);
+    font-family: arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    height: 100%;
+    line-height: 22px;
+    opacity: 1;
+    position: fixed;
+    right: #{0 - $draw-width};
+    top: 0;
+    width: $draw-width;
+    z-index: 9998;
+    @include display(flex);
+    @include flex-direction(column);
+
+    @include transition-property(right);
+    @include transition-duration(0.25s);
+    @include transition-timing-function(ease-out);
+
+    &--open {
+        right: 0;
+
+        @include transition-property(right);
+        @include transition-duration(0.25s);
+        @include transition-timing-function(ease-in);
+    }
+}

@@ -9,4 +9,8 @@ window.addEventListener 'load', () ->
     editor.init('[data-editable], [data-fixture]', 'data-editable')
 
     # Configure and initialize the CF flow manager
-    flowMgr.init()
+    flowMgr.init(
+        queryOrDOMElements='[data-cf-flow]',
+        idProp='data-cf-flow',
+        api=new ContentFlow.MockAPI()
+        )
