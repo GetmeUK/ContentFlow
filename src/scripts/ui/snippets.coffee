@@ -89,7 +89,7 @@ class SnippetUI extends ContentTools.ComponentUI
             @_domElement.appendChild(@_domTools)
 
         # Mount the snippet to the DOM
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
     # Private methods

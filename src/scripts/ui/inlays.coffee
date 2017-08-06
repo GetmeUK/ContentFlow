@@ -65,7 +65,7 @@ class ContentFlow.InlayHeaderToolsUI extends ContentTools.ComponentUI
 
         # Create the DOM element for the tools and mount it
         @_domElement = @constructor.createDiv(['ct-inlay__tools'])
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
         # Mount children
@@ -116,7 +116,7 @@ class ContentFlow.InlayHeaderUI extends ContentTools.ComponentUI
         @_domHeading = @constructor.createDiv(['ct-inlay__heading'])
         @_domHeading.textContent = ContentEdit._(@_heading)
         @_domElement.appendChild(@_domHeading)
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
         # Mount the tools
@@ -160,7 +160,7 @@ class ContentFlow.InlayNoteUI extends ContentTools.ComponentUI
         # Create the DOM element for the note and mount it
         @_domElement = @constructor.createDiv(['ct-inlay-note'])
         @_domElement.innerHTML = @_content
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
 
@@ -197,7 +197,7 @@ class ContentFlow.InlaySectionUI extends ContentTools.ComponentUI
         @_domHeading = @constructor.createDiv(['ct-inlay-section__heading'])
         @_domHeading.textContent = ContentEdit._(@_heading)
         @_domElement.appendChild(@_domHeading)
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
         # Mount children
@@ -244,7 +244,7 @@ class ContentFlow.InlayToolUI extends ContentTools.ComponentUI
             "ct-inlay-tool--#{ @_toolName }"
             ])
         @_domElement.setAttribute('data-ct-tooltip', ContentEdit._(@_tooltip))
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
     # Private methods

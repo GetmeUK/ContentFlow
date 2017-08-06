@@ -23,7 +23,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         @attach(@_draw)
 
         @_flows = new ContentFlow.FlowsUI()
-        @draw.attach(@_flows)
+        @_draw.attach(@_flows)
 
         @_toggle = new ContentFlow.ToggleUI()
         @attach(@_toggle)
@@ -32,7 +32,12 @@ class _FlowMgr extends ContentTools.ComponentUI
         @_flows.addEventListener 'select', (ev) =>
             @flow(ev.detail().flow)
 
-    init: (queryOrDOMElements, idProp='data-cf-flow', api=null) ->
+    init: (
+        queryOrDOMElements='[data-cf-flow]',
+        idProp='data-cf-flow',
+        api=null
+        ) ->
+
         # Initialize the manager
         editor = ContentTools.EditorApp.get()
 
@@ -60,8 +65,9 @@ class _FlowMgr extends ContentTools.ComponentUI
             @_toggle.show()
 
         # Mount the manager within the DOM
-        @mount()
-        @_toggle.show()
+        if @_domFlows.length > 0
+            @mount()
+            @_toggle.show()
 
     # Read-only
 
@@ -162,9 +168,9 @@ class _FlowMgr extends ContentTools.ComponentUI
 
     # Class methods
 
-    registerInterface: (name, cls) ->
+    @registerInterface: (name, cls) ->
         # Register an interface with the manager
-        @_interfaces[name] = cls
+        @_uiInterfaces[name] = cls
 
 
 class ContentFlow.FlowMgr

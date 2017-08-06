@@ -1,10 +1,11 @@
 
-class FlowsUI extends ContentTools.ComponentUI
+class ContentFlow.FlowsUI extends ContentTools.ComponentUI
 
     # A UI component that displays a list of content flows a user can choose
     # from manage.
 
     constructor: (flows=[]) ->
+        super()
 
         # A list of flows available to manage
         @_flows = flows
@@ -60,7 +61,7 @@ class FlowsUI extends ContentTools.ComponentUI
         @_domElement.appendChild(@_domSelect)
 
         # Mount flows to the DOM
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
     unmount: () ->

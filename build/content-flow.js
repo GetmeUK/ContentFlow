@@ -10399,7 +10399,7 @@
 }).call(this);
 
 (function() {
-  var ContentFlow, FlowsUI, SnippetUI, exports, _FlowMgr,
+  var ContentFlow, SnippetUI, exports, _FlowMgr,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
@@ -10463,7 +10463,7 @@
       this._draw = new ContentFlow.DrawUI();
       this.attach(this._draw);
       this._flows = new ContentFlow.FlowsUI();
-      this.draw.attach(this._flows);
+      this._draw.attach(this._flows);
       this._toggle = new ContentFlow.ToggleUI();
       this.attach(this._toggle);
       this._flows.addEventListener('select', (function(_this) {
@@ -10475,6 +10475,9 @@
 
     _FlowMgr.prototype.init = function(queryOrDOMElements, idProp, api) {
       var editor;
+      if (queryOrDOMElements == null) {
+        queryOrDOMElements = '[data-cf-flow]';
+      }
       if (idProp == null) {
         idProp = 'data-cf-flow';
       }
@@ -10507,8 +10510,10 @@
           return _this._toggle.show();
         };
       })(this));
-      this.mount();
-      return this._toggle.show();
+      if (this._domFlows.length > 0) {
+        this.mount();
+        return this._toggle.show();
+      }
     };
 
     _FlowMgr.prototype.api = function() {
@@ -10593,8 +10598,8 @@
       return this._toggle = null;
     };
 
-    _FlowMgr.prototype.registerInterface = function(name, cls) {
-      return this._interfaces[name] = cls;
+    _FlowMgr.registerInterface = function(name, cls) {
+      return this._uiInterfaces[name] = cls;
     };
 
     return _FlowMgr;
@@ -10849,7 +10854,7 @@
       var child, _i, _len, _ref, _results;
       DrawUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-draw', 'ct-draw--closed']);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       this._addDOMEventListeners();
       _ref = this.children();
       _results = [];
@@ -10953,7 +10958,7 @@
       this.mount_input();
       this._domErrors = this.constructor.createDiv(['ct-field_errors', 'ct-field_errors__empty']);
       this._domElement.appendChild(this._domErrors);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
     };
 
@@ -11096,13 +11101,14 @@
 
   })(ContentFlow.FieldUI);
 
-  FlowsUI = (function(_super) {
+  ContentFlow.FlowsUI = (function(_super) {
     __extends(FlowsUI, _super);
 
     function FlowsUI(flows) {
       if (flows == null) {
         flows = [];
       }
+      FlowsUI.__super__.constructor.call(this);
       this._flows = flows;
     }
 
@@ -11150,7 +11156,7 @@
         this._domSelect.appendChild(domOption);
       }
       this._domElement.appendChild(this._domSelect);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
     };
 
@@ -11254,7 +11260,7 @@
       var child, _i, _len, _ref, _results;
       InlayHeaderToolsUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-inlay__tools']);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       this._addDOMEventListeners();
       _ref = this.children();
       _results = [];
@@ -11299,7 +11305,7 @@
       this._domHeading = this.constructor.createDiv(['ct-inlay__heading']);
       this._domHeading.textContent = ContentEdit._(this._heading);
       this._domElement.appendChild(this._domHeading);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       this._addDOMEventListeners();
       return this._tools.mount();
     };
@@ -11335,7 +11341,7 @@
       InlayNoteUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-inlay-note']);
       this._domElement.innerHTML = this._content;
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
     };
 
@@ -11368,7 +11374,7 @@
       this._domHeading = this.constructor.createDiv(['ct-inlay-section__heading']);
       this._domHeading.textContent = ContentEdit._(this._heading);
       this._domElement.appendChild(this._domHeading);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       this._addDOMEventListeners();
       _ref = this.children();
       _results = [];
@@ -11409,7 +11415,7 @@
       InlayToolUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-inlay__tool', 'ct-inlay-tool', "ct-inlay-tool--" + this._toolName]);
       this._domElement.setAttribute('data-ct-tooltip', ContentEdit._(this._tooltip));
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
     };
 
@@ -11465,7 +11471,7 @@
         this._domTools.appendChild(this._domDeleteTool);
         this._domElement.appendChild(this._domTools);
       }
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
     };
 
@@ -11522,20 +11528,20 @@
 
   })(ContentTools.ComponentUI);
 
-  ContentFlow.ToogleUI = (function(_super) {
-    __extends(ToogleUI, _super);
+  ContentFlow.ToggleUI = (function(_super) {
+    __extends(ToggleUI, _super);
 
-    function ToogleUI() {
-      ToogleUI.__super__.constructor.call(this);
+    function ToggleUI() {
+      ToggleUI.__super__.constructor.call(this);
       this._state = 'off';
       this._enabled = true;
     }
 
-    ToogleUI.prototype.enabled = function() {
+    ToggleUI.prototype.enabled = function() {
       return this._enabled;
     };
 
-    ToogleUI.prototype.disable = function() {
+    ToggleUI.prototype.disable = function() {
       if (this.dispatchEvent(this.createEvent('disable'))) {
         this._enabled = false;
         if (this.isMounted()) {
@@ -11544,7 +11550,7 @@
       }
     };
 
-    ToogleUI.prototype.enable = function() {
+    ToggleUI.prototype.enable = function() {
       if (this.dispatchEvent(this.createEvent('enable'))) {
         this._enabled = true;
         if (this.isMounted()) {
@@ -11553,30 +11559,30 @@
       }
     };
 
-    ToogleUI.prototype.mount = function() {
-      ToogleUI.__super__.mount.call(this);
+    ToggleUI.prototype.mount = function() {
+      ToggleUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-widget', 'ct-toggle', 'ct-toggle--closed']);
       this._domOff = this.constructor.createDiv(['ct-toggle__button', 'ct-toggle__button--off']);
       this._domElement.appendChild(this._domOff);
       this._domOn = this.constructor.createDiv(['ct-toggle__button', 'ct-toggle__button--on']);
       this._domElement.appendChild(this._domOn);
-      this.parent.domElement().appendChild(this._domElement);
+      this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
     };
 
-    ToogleUI.prototype.off = function() {
+    ToggleUI.prototype.off = function() {
       if (this.dispatchEvent(this.createEvent('off'))) {
         return this.state('off');
       }
     };
 
-    ToogleUI.prototype.on = function() {
+    ToggleUI.prototype.on = function() {
       if (this.dispathEvent(this.createEvent('on'))) {
         return this.state('on');
       }
     };
 
-    ToogleUI.prototype.state = function(state) {
+    ToggleUI.prototype.state = function(state) {
       if (state === void 0) {
         return state;
       }
@@ -11600,7 +11606,7 @@
       }
     };
 
-    ToogleUI.prototype.toggle = function() {
+    ToggleUI.prototype.toggle = function() {
       if (this._state === 'on') {
         return this.off();
       } else {
@@ -11608,14 +11614,14 @@
       }
     };
 
-    ToogleUI.prototype.unmount = function() {
-      ToogleUI.__super__.unmount.call(this);
+    ToggleUI.prototype.unmount = function() {
+      ToggleUI.__super__.unmount.call(this);
       this._domOn = null;
       return this._domOff = null;
     };
 
-    ToogleUI.prototype._addDOMEventListeners = function() {
-      ToogleUI.__super__._addDOMEventListeners.call(this);
+    ToggleUI.prototype._addDOMEventListeners = function() {
+      ToggleUI.__super__._addDOMEventListeners.call(this);
       this._domOff.addEventListener('click', (function(_this) {
         return function(ev) {
           ev.preventDefault();
@@ -11634,7 +11640,7 @@
       })(this));
     };
 
-    return ToogleUI;
+    return ToggleUI;
 
   })(ContentTools.WidgetUI);
 

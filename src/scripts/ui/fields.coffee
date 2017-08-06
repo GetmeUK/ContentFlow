@@ -91,7 +91,7 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
         @_domElement.appendChild(@_domErrors)
 
         # Mount the field to the DOM
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
     mount_input: () ->

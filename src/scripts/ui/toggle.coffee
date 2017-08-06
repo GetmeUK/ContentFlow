@@ -1,5 +1,5 @@
 
-class ContentFlow.ToogleUI extends ContentTools.WidgetUI
+class ContentFlow.ToggleUI extends ContentTools.WidgetUI
 
     # An toggle switch widget
 
@@ -53,7 +53,7 @@ class ContentFlow.ToogleUI extends ContentTools.WidgetUI
             'ct-toggle__button--on'
             ])
         @_domElement.appendChild(@_domOn)
-        @parent.domElement().appendChild(@_domElement)
+        @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 
     off: () ->
