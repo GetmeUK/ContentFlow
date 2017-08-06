@@ -85,7 +85,7 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
         result.addEventListener 'load', (ev) =>
 
             # Unpack the response
-            const payload = JSON.parse(ev.target.responseText).payload
+            payload = JSON.parse(ev.target.responseText).payload
 
             # Check there's at least one field in the settings form
             unless payload.fields

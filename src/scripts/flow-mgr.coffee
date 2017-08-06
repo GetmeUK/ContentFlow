@@ -4,7 +4,7 @@ class _FlowMgr extends ContentTools.ComponentUI
     # The content flow manager
 
     # A map of UI interfaces the manager can load
-    @_interface = {}
+    @_uiInterfaces = {}
 
     constructor: () ->
         super()
@@ -29,7 +29,6 @@ class _FlowMgr extends ContentTools.ComponentUI
         @attach(@_toggle)
 
         # Handle interactions
-
         @_flows.addEventListener 'select', (ev) =>
             @flow(ev.detail().flow)
 
@@ -100,15 +99,15 @@ class _FlowMgr extends ContentTools.ComponentUI
         @_flow = flow
         ContentFlow.FlowMgr.get().loadInterface('list-snippets')
 
-    loadInterface: (name, ...args) ->
+    loadInterface: (name, args...) ->
         # Load an interface
 
         # Find the named interface
-        interface = @constructor._interfaces[name]
-        unless interface
+        uiInterface = @constructor._uiInterfaces[name]
+        unless uiInterface
             return
 
-        if interface.safeToClose()
+        if uiInterface.safeToClose()
             @_toggle.enable()
         else
             @_toggle.disable()
@@ -120,9 +119,9 @@ class _FlowMgr extends ContentTools.ComponentUI
             @_draw.detach(child)
 
         # Attach and initialize the new interface
-        @_draw.attach(interface)
-        interface.mount()
-        interface.init(...args)
+        @_draw.attach(uiInterface)
+        uiInterface.mount()
+        uiInterface.init(args...)
 
     mount: () ->
         # Mount the content flow manager

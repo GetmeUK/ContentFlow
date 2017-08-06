@@ -14,8 +14,24 @@ module.exports = (grunt) ->
             build:
                 files:
                     'src/tmp/content-flow.js': [
-                        'src/scripts/namespace.coffee'
-
+                        'src/scripts/namespace.coffee',
+                        'src/scripts/flow-mgr.coffee',
+                        'src/scripts/api/base.coffee',
+                        'src/scripts/models/flows.coffee',
+                        'src/scripts/models/snippets.coffee',
+                        'src/scripts/ui/draws.coffee',
+                        'src/scripts/ui/fields.coffee',
+                        'src/scripts/ui/flows.coffee',
+                        'src/scripts/ui/inlays.coffee',
+                        'src/scripts/ui/snippets.coffee',
+                        'src/scripts/ui/toggle.coffee',
+                        'src/scripts/ui/interfaces/interfaces.coffee',
+                        'src/scripts/ui/interfaces/add-snippet.coffee',
+                        'src/scripts/ui/interfaces/list-snippets.coffee',
+                        'src/scripts/ui/interfaces/make-snippet-global.coffee',
+                        'src/scripts/ui/interfaces/make-snippet-local.coffee',
+                        'src/scripts/ui/interfaces/order-snippets.coffee',
+                        'src/scripts/ui/interfaces/snippet-settings.coffee'
                     ]
 
             sandbox:

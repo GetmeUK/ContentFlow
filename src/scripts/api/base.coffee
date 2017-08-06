@@ -104,7 +104,6 @@ class ContentFlow.BaseAPI
                     formData.append(k, v)
 
         xhr.open(method, '#{ @baseURL }#{ endpoint }#{ paramsStr }')
-
-        setTimeout(() -> xhr.send(), 0)
+        xhr.send()
 
         return xhr

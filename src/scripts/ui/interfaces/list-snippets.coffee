@@ -22,7 +22,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
         @_tools.add.addEventListener 'click', (ev) =>
             ContentFlow.FlowMgr.get().loadInterface('add-snippet')
 
-    init: (flow, ...args) ->
+    init: () ->
         super()
 
         # Load the list of the snippets within the content flow
@@ -55,7 +55,9 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
 
                 # Scope
                 snippet.addEventListener 'scope', (ev) ->
-                    scope = 'global' if snippet.scope is 'local' else 'local'
+                    scope = 'local'
+                    if snippet.scope is 'global'
+                        scope = 'global'
                     ContentFlow.FlowMgr.get().loadInterface(
                         "make-snippet-#{ scope }",
                         ev.detail().snippet

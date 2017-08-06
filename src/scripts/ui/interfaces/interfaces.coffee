@@ -6,7 +6,7 @@ class ContentFlow.InterfaceUI extends ContentFlow.InlayUI
     constructor: (heading) ->
         super(heading)
 
-    init: (flow) ->
+    init: () ->
         # Initialize the interface
 
     # Read-only

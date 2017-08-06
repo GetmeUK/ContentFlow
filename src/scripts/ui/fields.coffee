@@ -70,7 +70,7 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
         # Create the DOM element for the field
         @_domElement = @constructor.createDiv([
             'ct-field',
-            'ct-field--required' if @_required else 'ct-field--optional'
+            if @_required then 'ct-field--required' else 'ct-field--optional'
         ])
 
         # Create the DOM element for the field label and attach it
