@@ -13,7 +13,7 @@ ContentFlow =
 
     getFlowDOMelement: (flow) ->
         # Return the DOM element represented by a content flow
-        return document.querySelector("[data-cf-flow=#{ flow.id or flow }]")
+        return document.querySelector("[data-cf-flow='#{ flow.id or flow }']")
 
     getFlowIdFromDOMElement: (element) ->
         # Return the Id of a content flow from a DOM element
@@ -25,7 +25,7 @@ ContentFlow =
 
     getSnippetDOMElement: (flow, snippet) ->
         # Return the DOM element represented by a snippet
-        return document.querySelector("[data-cf-snippet=#{ snippet.id }]")
+        return document.querySelector("[data-cf-snippet='#{ snippet.id }']")
 
     getSnippetIdFromDOMElement: (element) ->
         # Return the Id of a snippet from a DOM element

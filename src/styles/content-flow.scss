@@ -48,3 +48,20 @@ body {
         @include transition-timing-function(ease-out);
     }
 }
+
+.cf--highlight-snippet {
+    position: relative;
+
+    &::after {
+        background: $edit-action-color;
+        content: '';
+        display: block;
+        height: 100%;
+        left: 0;
+        opacity: 0.33;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 9999;
+    }
+}

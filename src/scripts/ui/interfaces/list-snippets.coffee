@@ -46,7 +46,23 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
                 uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage')
                 @_body.attach(uiSnippet)
 
-                # Handler interactions (settings, scope, delete)
+                # Handle interactions
+
+                # Common
+
+                uiSnippet.addEventListener 'over', (ev) ->
+                    ContentFlow.highlightSnippetDOMElement(
+                        ContentFlow.FlowMgr.get().flow(),
+                        ev.detail().snippet
+                    )
+
+                uiSnippet.addEventListener 'out', (ev) ->
+                    ContentFlow.dimSnippetDOMElement(
+                        ContentFlow.FlowMgr.get().flow(),
+                        ev.detail().snippet
+                    )
+
+                # Managing of snippets (settings, scope, delete)
 
                 # Settings
                 uiSnippet.addEventListener 'settings', (ev) ->

@@ -10416,7 +10416,7 @@
       return ContentFlow.FlowModel;
     },
     getFlowDOMelement: function(flow) {
-      return document.querySelector("[data-cf-flow=" + (flow.id || flow) + "]");
+      return document.querySelector("[data-cf-flow='" + (flow.id || flow) + "']");
     },
     getFlowIdFromDOMElement: function(element) {
       return delement.getattr('data-cf-flow');
@@ -10425,7 +10425,7 @@
       return ContentFlow.SnippetModel;
     },
     getSnippetDOMElement: function(flow, snippet) {
-      return document.querySelector("[data-cf-snippet=" + snippet.id + "]");
+      return document.querySelector("[data-cf-snippet='" + snippet.id + "']");
     },
     getSnippetIdFromDOMElement: function(element) {
       return delement.getattr('data-cf-snippet');
@@ -11587,7 +11587,7 @@
           }));
         };
       })(this));
-      this._domElement.addEventListener('mouseover', (function(_this) {
+      this._domElement.addEventListener('mouseout', (function(_this) {
         return function(ev) {
           return _this.dispatchEvent(_this.createEvent('out', {
             snippet: _this._snippet
@@ -11891,6 +11891,12 @@
             snippet = snippetCls.fromJSONType(flow, snippetData);
             uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage');
             _this._body.attach(uiSnippet);
+            uiSnippet.addEventListener('over', function(ev) {
+              return ContentFlow.highlightSnippetDOMElement(ContentFlow.FlowMgr.get().flow(), ev.detail().snippet);
+            });
+            uiSnippet.addEventListener('out', function(ev) {
+              return ContentFlow.dimSnippetDOMElement(ContentFlow.FlowMgr.get().flow(), ev.detail().snippet);
+            });
             uiSnippet.addEventListener('settings', function(ev) {
               return ContentFlow.FlowMgr.get().loadInterface('snippet-settings', ev.detail().snippet);
             });

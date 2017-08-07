@@ -102,7 +102,7 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
         @_domElement.addEventListener 'mouseover', (ev) =>
             @dispatchEvent(@createEvent('over', {snippet: @_snippet}))
 
-        @_domElement.addEventListener 'mouseover', (ev) =>
+        @_domElement.addEventListener 'mouseout', (ev) =>
             @dispatchEvent(@createEvent('out', {snippet: @_snippet}))
 
         if @_behaviour is 'manage'
