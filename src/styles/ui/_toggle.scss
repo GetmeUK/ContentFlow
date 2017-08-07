@@ -2,7 +2,12 @@
 
     &.ct-toggle {
         position: fixed;
+        right: 64px;
         top: 23px;
+
+        @include transition-property(right);
+        @include transition-duration(0.25s);
+        @include transition-timing-function(ease-out);
 
         &--on .ct-toggle__button--off,
         &--off .ct-toggle__button--on {
@@ -61,6 +66,18 @@
             &:hover {
                 background: lighten($bkg-color, 5%);
             }
+        }
+    }
+}
+
+.cf--flow-mgr-open {
+    .ct-widget {
+        &.ct-toggle {
+            right: 314px;
+
+            @include transition-property(right);
+            @include transition-duration(0.25s);
+            @include transition-timing-function(ease-in);
         }
     }
 }

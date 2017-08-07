@@ -140,6 +140,16 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
     constructor: (baseURL='/', baseParams={}) ->
         super(baseURL='/', baseParams={})
 
+        # A list of snippet types available to the flow
+        @_snippetTypes = {
+            'article-body': [
+                {
+                    'id': 'basic',
+                    'label': 'Basic'
+                }
+            ]
+        }
+
         # A list of globals snippets available to the flow
         @_globalSnippets = {
             'article-body': []
@@ -147,12 +157,14 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
 
         # A list of snippets in the flow
         @_snippets = {
-            'article-body': []
-        }
-
-        # A list of snippet types available to the flow
-        @_snippetTypes = {
-            'article-body': []
+            'article-body': [
+                {
+                    'id': 1,
+                    'type': @_snippetTypes['article-body'][0],
+                    'scope': 'local',
+                    'settings': {}
+                }
+            ]
         }
 
     # Private methods
@@ -161,7 +173,7 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
         # Fake the response of calling a real API
         switch endpoint
             when 'snippets'
-                return @_mockResponse({'snippets': @_snippets})
+                return @_mockResponse({'snippets': @_snippets[params['flow']]})
 
     _mockResponse: (payload) ->
         # Shortcut for building a mock successful API request/response

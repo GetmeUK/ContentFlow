@@ -1,9 +1,10 @@
 
-class SnippetUI extends ContentTools.ComponentUI
+class ContentFlow.SnippetUI extends ContentTools.ComponentUI
 
     # A UI component representing a snippet within a content flow
 
     constructor: (snippet, behaviour) ->
+        super()
 
         # The snippet the component represents
         @_snippet = snippet
@@ -32,7 +33,7 @@ class SnippetUI extends ContentTools.ComponentUI
             'ct-snippet--behaviour-' + @_behaviour,
             'ct-snippet--scope-' + @_snippet.scope
         ])
-        this._domElement.setAttribute('data-snippet-id', snippet.id)
+        this._domElement.setAttribute('data-snippet-id', @_snippet.id)
 
         # Preview image
         @_domPreview = @constructor.createDiv(['ct-snippet__preview'])
@@ -44,9 +45,9 @@ class SnippetUI extends ContentTools.ComponentUI
         # Label
         @_domLabel = @constructor.createDiv(['ct-snippet__label'])
         if @_snippet.label
-            @_domLabel.textContent = snippet.label
+            @_domLabel.textContent = @_snippet.label
         else
-            @_domLabel.textContent = snippet.type.label
+            @_domLabel.textContent = @_snippet.type.label
         @_domElement.appendChild(@_domLabel)
 
         # Tools (settings, scope, delete)
@@ -99,24 +100,24 @@ class SnippetUI extends ContentTools.ComponentUI
 
         # Add common event handlers (over/out)
         @_domElement.addEventListener 'mouseover', (ev) =>
-            @dispatchEvent(@createEvent('over', {snippet: snippet}))
+            @dispatchEvent(@createEvent('over', {snippet: @_snippet}))
 
         @_domElement.addEventListener 'mouseover', (ev) =>
-            @dispatchEvent(@createEvent('out', {snippet: snippet}))
+            @dispatchEvent(@createEvent('out', {snippet: @_snippet}))
 
         if @_behaviour is 'manage'
 
             # Add event handlers for manage (settings, scope and delete)
             @_domSettingsTool.addEventListener 'click', (ev) =>
-                @dispatchEvent(@createEvent('settings', {snippet: snippet}))
+                @dispatchEvent(@createEvent('settings', {snippet: @_snippet}))
 
             @_domScopeTool.addEventListener 'click', (ev) =>
-                @dispatchEvent(@createEvent('scope', {snippet: snippet}))
+                @dispatchEvent(@createEvent('scope', {snippet: @_snippet}))
 
             @_domDeleteTool.addEventListener 'click', (ev) =>
-                @dispatchEvent(@createEvent('delete', {snippet: snippet}))
+                @dispatchEvent(@createEvent('delete', {snippet: @_snippet}))
 
         else if @_behaviour is 'pick'
             # Add event handlers for pick
             @_domElement.addEventListener 'click', (ev) =>
-                @dispatchEvent(@createEvent('pick', {snippet: snippet}))
+                @dispatchEvent(@createEvent('pick', {snippet: @_snippet}))

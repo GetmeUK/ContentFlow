@@ -13,7 +13,7 @@ class ContentFlow.InlayUI extends ContentTools.ComponentUI
         @attach(@_header)
 
         # Attach the body component to the inlay
-        @_body = new ContentFlow.InlayHeaderUI()
+        @_body = new ContentFlow.InlayBodyUI()
         @attach(@_body)
 
     # Read-only

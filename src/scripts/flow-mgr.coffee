@@ -93,11 +93,18 @@ class _FlowMgr extends ContentTools.ComponentUI
         unless @dispatchEvent(@createEvent('close'))
             return
 
+        # Remove flag that the flow manager is open from the body of the page
+        document.body.classList.remove('cf--flow-mgr-open')
+
         # Close manager's UI
         @_draw.close()
 
         # Allow the editor to be started now the manager is closed
-        ContentTools.EditorApp.get().ignition().show()
+        editor = ContentTools.EditorApp.get()
+
+        # Only show the editor tool if there are regions to edit
+        if editor.domRegions().length
+            editor.ignition().show()
 
     flow: (flow) ->
         # Get/set the current content flow being managed
@@ -152,6 +159,9 @@ class _FlowMgr extends ContentTools.ComponentUI
         # Open the content flow manager
         unless @dispatchEvent(@createEvent('open'))
             return
+
+        # Flag that the flow manager is open against the body of the page
+        document.body.classList.add('cf--flow-mgr-open')
 
         # Prevent the CT editor from being started while the manager is open
         ContentTools.EditorApp.get().ignition().hide()

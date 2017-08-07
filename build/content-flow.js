@@ -10399,7 +10399,7 @@
 }).call(this);
 
 (function() {
-  var ContentFlow, MockRequest, SnippetUI, exports, _FlowMgr,
+  var ContentFlow, MockRequest, exports, _FlowMgr,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
@@ -10409,14 +10409,14 @@
       var element;
       element = ContentFlow.getSnippetDOMElement(flow, snippet);
       if (element) {
-        return element.classList.remove('cf-snippet--highlight');
+        return element.classList.remove('cf--highlight-snippet');
       }
     },
     getFlowCls: function() {
       return ContentFlow.FlowModel;
     },
     getFlowDOMelement: function(flow) {
-      return document.querySelector("data-cf-flow=" + (flow.id || flow));
+      return document.querySelector("[data-cf-flow=" + (flow.id || flow) + "]");
     },
     getFlowIdFromDOMElement: function(element) {
       return delement.getattr('data-cf-flow');
@@ -10425,7 +10425,7 @@
       return ContentFlow.SnippetModel;
     },
     getSnippetDOMElement: function(flow, snippet) {
-      return document.querySelector("data-cf-snippet=" + snippet.id);
+      return document.querySelector("[data-cf-snippet=" + snippet.id + "]");
     },
     getSnippetIdFromDOMElement: function(element) {
       return delement.getattr('data-cf-snippet');
@@ -10437,7 +10437,7 @@
       var element;
       element = ContentFlow.getSnippetDOMElement(flow, snippet);
       if (element) {
-        return element.classList.add('cf-snippet--highlight');
+        return element.classList.add('cf--highlight-snippet');
       }
     }
   };
@@ -10533,11 +10533,16 @@
     };
 
     _FlowMgr.prototype.close = function() {
+      var editor;
       if (!this.dispatchEvent(this.createEvent('close'))) {
         return;
       }
+      document.body.classList.remove('cf--flow-mgr-open');
       this._draw.close();
-      return ContentTools.EditorApp.get().ignition().show();
+      editor = ContentTools.EditorApp.get();
+      if (editor.domRegions().length) {
+        return editor.ignition().show();
+      }
     };
 
     _FlowMgr.prototype.flow = function(flow) {
@@ -10591,6 +10596,7 @@
       if (!this.dispatchEvent(this.createEvent('open'))) {
         return;
       }
+      document.body.classList.add('cf--flow-mgr-open');
       ContentTools.EditorApp.get().ignition().hide();
       return this._draw.open();
     };
@@ -10800,14 +10806,26 @@
         baseParams = {};
       }
       MockAPI.__super__.constructor.call(this, baseURL = '/', baseParams = {});
+      this._snippetTypes = {
+        'article-body': [
+          {
+            'id': 'basic',
+            'label': 'Basic'
+          }
+        ]
+      };
       this._globalSnippets = {
         'article-body': []
       };
       this._snippets = {
-        'article-body': []
-      };
-      this._snippetTypes = {
-        'article-body': []
+        'article-body': [
+          {
+            'id': 1,
+            'type': this._snippetTypes['article-body'][0],
+            'scope': 'local',
+            'settings': {}
+          }
+        ]
       };
     }
 
@@ -10818,7 +10836,7 @@
       switch (endpoint) {
         case 'snippets':
           return this._mockResponse({
-            'snippets': this._snippets
+            'snippets': this._snippets[params['flow']]
           });
       }
     };
@@ -10881,7 +10899,9 @@
     }
 
     SnippetModel.fromJSONType = function(flow, jsonTypeData) {
-      return new ContentFlow.SnippetModel(jsonTypeData.id, ContentFlow.SnippetTypejson.fromJSONType(jsonTypeData.type), jsonTypeData.scope, jsonTypeData.settings, jsonTypeData.global_id, jsonTypeData.label);
+      var snippetTypeClass;
+      snippetTypeClass = ContentFlow.getSnippetTypeCls(flow);
+      return new ContentFlow.SnippetModel(jsonTypeData.id, snippetTypeClass.fromJSONType(flow, jsonTypeData.type), jsonTypeData.scope, jsonTypeData.settings, jsonTypeData.global_id, jsonTypeData.label);
     };
 
     return SnippetModel;
@@ -10902,7 +10922,7 @@
       return new ContentFlow.Snippet('', this);
     };
 
-    SnippetTypeModel.fromJSONType = function(jsonTypeData) {
+    SnippetTypeModel.fromJSONType = function(flow, jsonTypeData) {
       return new ContentFlow.SnippetTypeModel(jsonTypeData.id, jsonTypeData.label, jsonTypeData.imageURL);
     };
 
@@ -11280,7 +11300,7 @@
       InlayUI.__super__.constructor.call(this);
       this._header = new ContentFlow.InlayHeaderUI(heading);
       this.attach(this._header);
-      this._body = new ContentFlow.InlayHeaderUI();
+      this._body = new ContentFlow.InlayBodyUI();
       this.attach(this._body);
     }
 
@@ -11514,10 +11534,11 @@
 
   })(ContentTools.ComponentUI);
 
-  SnippetUI = (function(_super) {
+  ContentFlow.SnippetUI = (function(_super) {
     __extends(SnippetUI, _super);
 
     function SnippetUI(snippet, behaviour) {
+      SnippetUI.__super__.constructor.call(this);
       this._snippet = snippet;
       this._behaviour = behaviour;
     }
@@ -11526,7 +11547,7 @@
       var bkgURL;
       SnippetUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-snippet', 'ct-snippet--behaviour-' + this._behaviour, 'ct-snippet--scope-' + this._snippet.scope]);
-      this._domElement.setAttribute('data-snippet-id', snippet.id);
+      this._domElement.setAttribute('data-snippet-id', this._snippet.id);
       this._domPreview = this.constructor.createDiv(['ct-snippet__preview']);
       if (this._snippet.type.imageURL) {
         bkgURL = "url(" + this._snippet.type.imageURL + ")";
@@ -11535,9 +11556,9 @@
       this._domElement.appendChild(this._domPreview);
       this._domLabel = this.constructor.createDiv(['ct-snippet__label']);
       if (this._snippet.label) {
-        this._domLabel.textContent = snippet.label;
+        this._domLabel.textContent = this._snippet.label;
       } else {
-        this._domLabel.textContent = snippet.type.label;
+        this._domLabel.textContent = this._snippet.type.label;
       }
       this._domElement.appendChild(this._domLabel);
       if (this._behaviour === 'manage') {
@@ -11562,14 +11583,14 @@
       this._domElement.addEventListener('mouseover', (function(_this) {
         return function(ev) {
           return _this.dispatchEvent(_this.createEvent('over', {
-            snippet: snippet
+            snippet: _this._snippet
           }));
         };
       })(this));
       this._domElement.addEventListener('mouseover', (function(_this) {
         return function(ev) {
           return _this.dispatchEvent(_this.createEvent('out', {
-            snippet: snippet
+            snippet: _this._snippet
           }));
         };
       })(this));
@@ -11577,21 +11598,21 @@
         this._domSettingsTool.addEventListener('click', (function(_this) {
           return function(ev) {
             return _this.dispatchEvent(_this.createEvent('settings', {
-              snippet: snippet
+              snippet: _this._snippet
             }));
           };
         })(this));
         this._domScopeTool.addEventListener('click', (function(_this) {
           return function(ev) {
             return _this.dispatchEvent(_this.createEvent('scope', {
-              snippet: snippet
+              snippet: _this._snippet
             }));
           };
         })(this));
         return this._domDeleteTool.addEventListener('click', (function(_this) {
           return function(ev) {
             return _this.dispatchEvent(_this.createEvent('delete', {
-              snippet: snippet
+              snippet: _this._snippet
             }));
           };
         })(this));
@@ -11599,7 +11620,7 @@
         return this._domElement.addEventListener('click', (function(_this) {
           return function(ev) {
             return _this.dispatchEvent(_this.createEvent('pick', {
-              snippet: snippet
+              snippet: _this._snippet
             }));
           };
         })(this));
@@ -11855,8 +11876,8 @@
       result = flowMgr.api().getSnippets(flowMgr.flow());
       return result.addEventListener('load', (function(_this) {
         return function(ev) {
-          var child, flow, payload, snippet, snippetCls, snippetData, _i, _len, _ref;
-          payload = JSON.parse(ev.target.responseText);
+          var child, flow, payload, snippet, snippetCls, snippetData, uiSnippet, _i, _j, _len, _len1, _ref, _ref1;
+          payload = JSON.parse(ev.target.responseText).payload;
           _ref = _this._body.children;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             child = _ref[_i];
@@ -11864,13 +11885,16 @@
           }
           flow = ContentFlow.FlowMgr.get().flow();
           snippetCls = ContentFlow.getSnippetCls(flow);
-          for (snippetData in payload.snippets) {
+          _ref1 = payload.snippets;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            snippetData = _ref1[_j];
             snippet = snippetCls.fromJSONType(flow, snippetData);
-            _this._body.attach(new ContentFlow.SnippetUI(snippet, 'manage'));
-            snippet.addEventListener('settings', function(ev) {
+            uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage');
+            _this._body.attach(uiSnippet);
+            uiSnippet.addEventListener('settings', function(ev) {
               return ContentFlow.FlowMgr.get().loadInterface('snippet-settings', ev.detail().snippet);
             });
-            snippet.addEventListener('scope', function(ev) {
+            uiSnippet.addEventListener('scope', function(ev) {
               var scope;
               scope = 'local';
               if (snippet.scope === 'global') {
@@ -11878,7 +11902,7 @@
               }
               return ContentFlow.FlowMgr.get().loadInterface("make-snippet-" + scope, ev.detail().snippet);
             });
-            snippet.addEventListener('delete', function(ev) {
+            uiSnippet.addEventListener('delete', function(ev) {
               var msg, _removeSnippet;
               msg = ContentEdit._('Are you sure you want to delete this snippet?');
               if (confirm(msg)) {

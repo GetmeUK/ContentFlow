@@ -31,7 +31,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
         result.addEventListener 'load', (ev) =>
 
             # Unpack the response
-            payload = JSON.parse(ev.target.responseText)
+            payload = JSON.parse(ev.target.responseText).payload
 
             # Remove existing snippets from the interface
             for child in @_body.children
@@ -40,21 +40,23 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
             # Add snippets
             flow = ContentFlow.FlowMgr.get().flow()
             snippetCls = ContentFlow.getSnippetCls(flow)
-            for snippetData of payload.snippets
+
+            for snippetData in payload.snippets
                 snippet = snippetCls.fromJSONType(flow, snippetData)
-                @_body.attach(new ContentFlow.SnippetUI(snippet, 'manage'))
+                uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage')
+                @_body.attach(uiSnippet)
 
                 # Handler interactions (settings, scope, delete)
 
                 # Settings
-                snippet.addEventListener 'settings', (ev) ->
+                uiSnippet.addEventListener 'settings', (ev) ->
                     ContentFlow.FlowMgr.get().loadInterface(
                         'snippet-settings',
                         ev.detail().snippet
                     )
 
                 # Scope
-                snippet.addEventListener 'scope', (ev) ->
+                uiSnippet.addEventListener 'scope', (ev) ->
                     scope = 'local'
                     if snippet.scope is 'global'
                         scope = 'global'
@@ -64,7 +66,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
                     )
 
                 # Delete
-                snippet.addEventListener 'delete', (ev) =>
+                uiSnippet.addEventListener 'delete', (ev) =>
                     msg = ContentEdit._(
                         'Are you sure you want to delete this snippet?'
                     )

@@ -39,9 +39,10 @@ class ContentFlow.SnippetModel
 
     @fromJSONType: (flow, jsonTypeData) ->
         # Convert a JSON type object to a `Snippet` instance
+        snippetTypeClass = ContentFlow.getSnippetTypeCls(flow)
         return new ContentFlow.SnippetModel(
             jsonTypeData.id,
-            ContentFlow.SnippetTypejson.fromJSONType(jsonTypeData.type),
+            snippetTypeClass.fromJSONType(flow, jsonTypeData.type),
             jsonTypeData.scope,
             jsonTypeData.settings,
             jsonTypeData.global_id,
@@ -71,7 +72,7 @@ class ContentFlow.SnippetTypeModel
 
     # Class methods
 
-    @fromJSONType: (jsonTypeData) ->
+    @fromJSONType: (flow, jsonTypeData) ->
         # Convert a JSON type object to a `SnippetType` instance
         return new ContentFlow.SnippetTypeModel(
             jsonTypeData.id,

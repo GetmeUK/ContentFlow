@@ -2,3 +2,49 @@ $image-path-prefix: '../node_modules/ContentTools/build/images/';
 
 @import '../../node_modules/ContentTools/src/styles/content-tools';
 @import './ui/ui';
+
+
+// Settings
+
+$flow-mgr-width: 250px default;
+
+
+// Overiding styles for elements not specific to ContentFlow
+
+body {
+    @include transition-property(padding-right);
+    @include transition-duration(0.25s);
+    @include transition-timing-function(ease-out);
+
+    &.cf--flow-mgr-open {
+        padding-right: $draw-width;
+
+        @include transition-property(padding-right);
+        @include transition-duration(0.25s);
+        @include transition-timing-function(ease-in);
+
+        .ct-widget {
+            &.ct-ignition {
+                right: 378px;
+
+                @include transition-property(all);
+                @include transition-duration(0.25s);
+                @include transition-timing-function(ease-in);
+            }
+        }
+    }
+}
+
+.ct-widget {
+
+    // Override the position of the ignition switch
+    &.ct-ignition {
+        left: auto;
+        right: 128px;
+        top: 23px;
+
+        @include transition-property(all);
+        @include transition-duration(0.25s);
+        @include transition-timing-function(ease-out);
+    }
+}

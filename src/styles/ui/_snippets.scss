@@ -1,0 +1,147 @@
+.ct-snippet {
+    box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+    padding: 10px 20px 0;
+    position: relative;
+
+    &--behaviour-pick {
+        cursor: pointer;
+    }
+
+    &--scope-global {
+        .ct-snippet__label::before {
+            background: #27ae60;
+            border-radius: 8px;
+            color: #fff;
+            content: 'G';
+            display: inline-block;
+            font-weight: bold;
+            height: 16px;
+            line-height: 16px;
+            margin-right: 5px;
+            text-align: center;
+            width: 16px;
+        }
+    }
+
+    &:hover {
+        background: linear-gradient(270deg, rgba(0, 0, 0, 0.025), transparent);
+
+        .ct-snippet__tools {
+            opacity: 1.0;
+        }
+    }
+
+    &__label {
+        color: #999;
+        font-size: 14px;
+        margin-top: 5px;
+        @include ellipsis();
+        @include flex(1);
+    }
+
+    &__preview {
+        background: rgba(0, 0, 0, 0.025);
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        height: 50px;
+    }
+
+    &__tools {
+        background: rgba(#000, 0.1);
+        height: 100%;
+        left: 0;
+        opacity: 0.0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+    }
+
+    &__tool {
+        background: #fff;
+        border-radius: 2px;
+        cursor: pointer;
+        display: block;
+        height: 32px;
+        right: 8px;
+        position: absolute;
+        top: 8px;
+        width: 32px;
+        z-index: 1;
+        @include align-items(center);
+        @include display(flex);
+        @include justify-content(center);
+
+        &:hover {
+            &::before {
+                opacity: 0.8;
+                visibility: visible;
+                @include transition(opacity 0s ease-in);
+                @include transition-delay(2s);
+            }
+
+            &::after {
+                opacity: 1;
+            }
+        }
+
+        &::before {
+            background: #000;
+            color: #fff;
+            content: attr(data-ct-tooltip);
+            display: block;
+            font-family: arial, sans-serif;
+            font-size: 12px;
+            hyphens: auto;
+            line-height: 20px;
+            opacity: 0;
+            padding: 0 8px;
+            text-align: center;
+            visibility: hidden;
+            width: 85px;
+            word-break: break-word;
+            @include position(absolute, null null 37px -26.5px);
+        }
+
+        &::after {
+            background: center center no-repeat;
+            background-size: contain;
+            content: '';
+            display: block;
+            height: 16px;
+            opacity: 0.35;
+            width: 16px;
+        }
+
+        &--tooltip-left {
+            &::before {
+                @include position(absolute, null null 6px -100px);
+            }
+        }
+
+        &--settings {
+            right: 88px;
+
+            &::after {
+                content: 'set';
+                //background-image: url('../images/icon-cog.svg');
+            }
+        }
+
+        &--scope {
+            right: 48px;
+
+            &::after {
+                content: 'scp';
+                //background-image: url('../images/icon-share.svg');
+            }
+        }
+
+        &--delete {
+            &::after {
+                content: 'del';
+                //background-image: url('../images/icon-bin.svg');
+            }
+        }
+    }
+}

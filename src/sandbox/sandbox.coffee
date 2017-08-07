@@ -6,7 +6,7 @@ window.addEventListener 'load', () ->
     flowMgr = ContentFlow.FlowMgr.get()
 
     # Configure and initialize the CT editor
-    editor.init('[data-editable], [data-fixture]', 'data-editable')
+    editor.init('[data-cf-snippet], [data-fixture]', 'data-cf-snippet')
 
     # Configure and initialize the CF flow manager
     flowMgr.init(
