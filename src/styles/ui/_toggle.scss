@@ -38,17 +38,19 @@
             text-align: center;
             width: $button-size;
 
+            @include type-icons($font-size: 24px);
+
             $bkg-color: $edit-action-color;
 
             &--on {
                 &:before {
-                    content: '+'
+                    content: '\ea68'
                 }
             }
 
             &--off {
                 &:before {
-                    content: '-'
+                    content: '\ea3c'
                 }
             }
 
@@ -57,7 +59,6 @@
                 background-repeat: no-repeat;
                 background-size: 24px 24px;
                 color: white;
-                content: '';
                 display: block;
                 height: $button-size;
                 width: $button-size;

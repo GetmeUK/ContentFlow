@@ -58,15 +58,17 @@
     }
 
     &__tool {
+        $button-size: 32px;
+
         background: #fff;
         border-radius: 2px;
         cursor: pointer;
         display: block;
-        height: 32px;
+        height: $button-size;
         right: 8px;
         position: absolute;
         top: 8px;
-        width: 32px;
+        width: $button-size;
         z-index: 1;
         @include align-items(center);
         @include display(flex);
@@ -81,7 +83,7 @@
             }
 
             &::after {
-                opacity: 1;
+                color: $edit-action-color;
             }
         }
 
@@ -104,13 +106,17 @@
         }
 
         &::after {
-            background: center center no-repeat;
-            background-size: contain;
-            content: '';
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: 24px 24px;
+            color: #999;
             display: block;
-            height: 16px;
-            opacity: 0.35;
-            width: 16px;
+            height: $button-size;
+            line-height: $button-size;
+            text-align: center;
+            width: $button-size;
+
+            @include type-icons($font-size: 16px);
         }
 
         &--tooltip-left {
@@ -123,8 +129,7 @@
             right: 88px;
 
             &::after {
-                content: 'set';
-                //background-image: url('../images/icon-cog.svg');
+                content: '\e993';
             }
         }
 
@@ -132,15 +137,13 @@
             right: 48px;
 
             &::after {
-                content: 'scp';
-                //background-image: url('../images/icon-share.svg');
+                content: '\e9ca';
             }
         }
 
         &--delete {
             &::after {
-                content: 'del';
-                //background-image: url('../images/icon-bin.svg');
+                content: '\e9ac';
             }
         }
     }

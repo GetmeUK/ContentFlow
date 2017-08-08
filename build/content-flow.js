@@ -10811,17 +10811,48 @@
           {
             'id': 'basic',
             'label': 'Basic'
+          }, {
+            'id': 'advanced',
+            'label': 'Advanced'
+          }
+        ],
+        'article-related': [
+          {
+            'id': 'basic',
+            'label': 'Basic'
+          }, {
+            'id': 'archive',
+            'label': 'Archive'
           }
         ]
       };
       this._globalSnippets = {
-        'article-body': []
+        'article-body': [],
+        'article-related': []
       };
       this._snippets = {
         'article-body': [
           {
             'id': 1,
             'type': this._snippetTypes['article-body'][0],
+            'scope': 'local',
+            'settings': {}
+          }, {
+            'id': 2,
+            'type': this._snippetTypes['article-body'][1],
+            'scope': 'local',
+            'settings': {}
+          }
+        ],
+        'article-related': [
+          {
+            'id': 3,
+            'type': this._snippetTypes['article-related'][1],
+            'scope': 'local',
+            'settings': {}
+          }, {
+            'id': 4,
+            'type': this._snippetTypes['article-related'][0],
             'scope': 'local',
             'settings': {}
           }

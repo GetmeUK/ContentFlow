@@ -146,13 +146,26 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
                 {
                     'id': 'basic',
                     'label': 'Basic'
+                }, {
+                    'id': 'advanced',
+                    'label': 'Advanced'
+                }
+            ],
+            'article-related': [
+                {
+                    'id': 'basic',
+                    'label': 'Basic'
+                }, {
+                    'id': 'archive',
+                    'label': 'Archive'
                 }
             ]
         }
 
         # A list of globals snippets available to the flow
         @_globalSnippets = {
-            'article-body': []
+            'article-body': [],
+            'article-related': []
         }
 
         # A list of snippets in the flow
@@ -161,6 +174,24 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
                 {
                     'id': 1,
                     'type': @_snippetTypes['article-body'][0],
+                    'scope': 'local',
+                    'settings': {}
+                }, {
+                    'id': 2,
+                    'type': @_snippetTypes['article-body'][1],
+                    'scope': 'local',
+                    'settings': {}
+                }
+            ],
+            'article-related': [
+                {
+                    'id': 3,
+                    'type': @_snippetTypes['article-related'][1],
+                    'scope': 'local',
+                    'settings': {}
+                }, {
+                    'id': 4,
+                    'type': @_snippetTypes['article-related'][0],
                     'scope': 'local',
                     'settings': {}
                 }

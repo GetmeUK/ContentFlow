@@ -49,7 +49,6 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
                 # Handle interactions
 
                 # Common
-
                 uiSnippet.addEventListener 'over', (ev) ->
                     ContentFlow.highlightSnippetDOMElement(
                         ContentFlow.FlowMgr.get().flow(),
