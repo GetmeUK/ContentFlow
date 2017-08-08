@@ -10865,9 +10865,17 @@
         params = {};
       }
       switch (endpoint) {
+        case 'global-snippets':
+          return this._mockResponse({
+            'snippets': this._globalSnippets[params['flow']]
+          });
         case 'snippets':
           return this._mockResponse({
             'snippets': this._snippets[params['flow']]
+          });
+        case 'snippet-types':
+          return this._mockResponse({
+            'snippet_types': this._snippetTypes[params['flow']]
           });
       }
     };
@@ -10950,7 +10958,7 @@
     }
 
     SnippetTypeModel.prototype.toSnippet = function() {
-      return new ContentFlow.Snippet('', this);
+      return new ContentFlow.SnippetModel('', this);
     };
 
     SnippetTypeModel.fromJSONType = function(flow, jsonTypeData) {
@@ -11801,7 +11809,7 @@
     function AddSnippetUI() {
       AddSnippetUI.__super__.constructor.call(this, 'Add');
       this._tools = {
-        cancel: new ContentFlow.InlayToolUI('order', 'Order', true)
+        cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
       };
       this._header.tools().attach(this._tools.cancel);
       this._tools.cancel.addEventListener('click', (function(_this) {
@@ -11818,21 +11826,22 @@
       result = flowMgr.api().getSnippetTypes(flowMgr.flow());
       return result.addEventListener('load', (function(_this) {
         return function(ev) {
-          var child, flow, payload, snippetType, _i, _j, _len, _len1, _ref, _ref1;
+          var child, flow, payload, snippetType, snippetTypeData, uiSnippet, _i, _j, _len, _len1, _ref, _ref1;
           flow = ContentFlow.FlowMgr.get().flow();
-          payload = JSON.parse(ev.target.responseText);
-          payload = JSON.parse(ev.target.responseText);
+          payload = JSON.parse(ev.target.responseText).payload;
           _ref = _this._body.children;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             child = _ref[_i];
             _this._body.detach(child);
           }
-          _this._local = new ContentFlow.InlaySectionUI('Local');
-          _ref1 = flow.snippetTypes;
+          _this._local = new ContentFlow.InlaySectionUI('Local scope');
+          _ref1 = payload['snippet_types'];
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            snippetType = _ref1[_j];
-            _this._local.attach(new ContentFlow.SnippetUI(snippetType.toSnippet()));
-            snippet.addEventListener('pick', function(ev) {
+            snippetTypeData = _ref1[_j];
+            snippetType = ContentFlow.SnippetTypeModel.fromJSONType(flow, snippetTypeData);
+            uiSnippet = new ContentFlow.SnippetUI(snippetType.toSnippet(), 'pick');
+            _this._local.attach(uiSnippet);
+            uiSnippet.addEventListener('pick', function(ev) {
               flowMgr = ContentFlow.FlowMgr.get();
               result = flowMgr.api().addSnippet(flowMgr.flow(), ev.detail().snippet.type);
               return result.addEventListener('load', (function(_this) {
@@ -11847,13 +11856,15 @@
           return result.addEventListener('load', function(ev) {
             var snippet, snippetData, _k, _len2, _ref2;
             flow = ContentFlow.FlowMgr.get().flow();
-            _this._global = new ContentFlow.InlaySectionUI('Global');
+            payload = JSON.parse(ev.target.responseText).payload;
+            _this._global = new ContentFlow.InlaySectionUI('Global scope');
             _ref2 = payload.snippets;
             for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
               snippetData = _ref2[_k];
               snippet = snippetCls.fromJSONType(flow, snippetData);
-              _this._global.attach(new ContentFlow.SnippetUI(snippet));
-              snippet.addEventListener('pick', function(ev) {
+              uiSnippet = new ContentFlow.SnippetUI(snippet, 'pick');
+              _this._global.attach(uiSnippet);
+              uiSnippet.addEventListener('pick', function(ev) {
                 flowMgr = ContentFlow.FlowMgr.get();
                 result = flowMgr.api().addGlobalSnippet(flowMgr.flow(), ev.detail().snippet);
                 return result.addEventListener('load', (function(_this) {
@@ -11863,7 +11874,9 @@
                 })(this));
               });
             }
-            _this._body.attach(_this._global);
+            if (_this._global.children().length > 0) {
+              _this._body.attach(_this._global);
+            }
             _this._body.unmount();
             return _this._body.mount();
           });

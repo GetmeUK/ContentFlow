@@ -68,7 +68,7 @@ class ContentFlow.SnippetTypeModel
 
     toSnippet: () ->
         # Convert the snippet type to a shell snippet
-        return new ContentFlow.Snippet('', this)
+        return new ContentFlow.SnippetModel('', this)
 
     # Class methods
 

@@ -9,7 +9,7 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
 
         # Add `cancel` tool to the header
         @_tools = {
-            cancel: new ContentFlow.InlayToolUI('order', 'Order', true)
+            cancel: new ContentFlow.InlayToolUI('cancel', 'Cancel', true)
         }
         @_header.tools().attach(@_tools.cancel)
 
@@ -31,24 +31,31 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
             flow = ContentFlow.FlowMgr.get().flow()
 
             # Unpack the response
-            payload = JSON.parse(ev.target.responseText)
-
-            # Unpack the response
-            payload = JSON.parse(ev.target.responseText)
+            payload = JSON.parse(ev.target.responseText).payload
 
             # Remove existing snippets from the interface
             for child in @_body.children
                 @_body.detach(child)
 
             # Add a list of snippet types to choose from
-            @_local = new ContentFlow.InlaySectionUI('Local')
-            for snippetType in flow.snippetTypes
-                @_local.attach(
-                    new ContentFlow.SnippetUI(snippetType.toSnippet())
+            @_local = new ContentFlow.InlaySectionUI('Local scope')
+            for snippetTypeData in payload['snippet_types']
+
+                # Convert the snippet type to a model
+                snippetType = ContentFlow.SnippetTypeModel.fromJSONType(
+                    flow,
+                    snippetTypeData
                 )
 
+                # Add a snippet UI component for the snippet type
+                uiSnippet = new ContentFlow.SnippetUI(
+                    snippetType.toSnippet(),
+                    'pick'
+                )
+                @_local.attach(uiSnippet)
+
                 # Handle the user picking a snippet type
-                snippet.addEventListener 'pick', (ev) ->
+                uiSnippet.addEventListener 'pick', (ev) ->
 
                     # Call the API to add the new snippet
                     flowMgr = ContentFlow.FlowMgr.get()
@@ -66,16 +73,22 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
             result.addEventListener 'load', (ev) =>
                 flow = ContentFlow.FlowMgr.get().flow()
 
+                # Unpack the response
+                payload = JSON.parse(ev.target.responseText).payload
+
                 # Add a list of global snippets to choose from
-                @_global = new ContentFlow.InlaySectionUI('Global')
+                @_global = new ContentFlow.InlaySectionUI('Global scope')
                 for snippetData in payload.snippets
+
+                    # Convert the global snippet data to a model
                     snippet = snippetCls.fromJSONType(flow, snippetData)
-                    @_global.attach(
-                        new ContentFlow.SnippetUI(snippet)
-                    )
+
+                    # Add a snippet UI component for the global snippet
+                    uiSnippet = new ContentFlow.SnippetUI(snippet, 'pick')
+                    @_global.attach(uiSnippet)
 
                     # Handle the user picking a global snippet
-                    snippet.addEventListener 'pick', (ev) ->
+                    uiSnippet.addEventListener 'pick', (ev) ->
 
                         # Call the API to add the new snippet
                         flowMgr = ContentFlow.FlowMgr.get()
@@ -88,7 +101,8 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                                 'list-snippets'
                             )
 
-                @_body.attach(@_global)
+                if @_global.children().length > 0
+                    @_body.attach(@_global)
 
                 # (Re)mount the body
                 @_body.unmount()

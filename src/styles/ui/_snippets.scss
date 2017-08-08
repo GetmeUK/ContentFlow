@@ -23,11 +23,22 @@
         }
     }
 
-    &:hover {
-        background: linear-gradient(270deg, rgba(0, 0, 0, 0.025), transparent);
+    &--behaviour-manage {
+        &:hover {
+            .ct-snippet__tools {
+                opacity: 1.0;
+                @include transition(opacity 0.5s ease-in);
+            }
+        }
+    }
 
-        .ct-snippet__tools {
-            opacity: 1.0;
+    &--behaviour-pick {
+        cursor: pointer;
+
+        &:hover {
+            .ct-snippet__label {
+                color: $edit-action-color;
+            }
         }
     }
 
@@ -48,26 +59,25 @@
     }
 
     &__tools {
-        background: rgba(#000, 0.1);
+        background: rgba(#fff, 0.55);
+        bottom: 0;
         height: 100%;
         left: 0;
         opacity: 0.0;
         position: absolute;
-        top: 0;
         width: 100%;
+        @include transition(opacity 0.5s ease-out);
     }
 
     &__tool {
         $button-size: 32px;
 
-        background: #fff;
-        border-radius: 2px;
+        bottom: 8px;
         cursor: pointer;
         display: block;
         height: $button-size;
         right: 8px;
         position: absolute;
-        top: 8px;
         width: $button-size;
         z-index: 1;
         @include align-items(center);
@@ -88,7 +98,8 @@
         }
 
         &::before {
-            background: #000;
+            background-color: #000;
+            border-radius: 3px 3px 0 3px;
             color: #fff;
             content: attr(data-ct-tooltip);
             display: block;
@@ -102,7 +113,8 @@
             visibility: hidden;
             width: 85px;
             word-break: break-word;
-            @include position(absolute, null null 37px -26.5px);
+            z-index: 1;
+            @include position(absolute, null null 24px -94px);
         }
 
         &::after {

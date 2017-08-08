@@ -203,8 +203,19 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
     _callEndpoint: (method, endpoint, params={}) ->
         # Fake the response of calling a real API
         switch endpoint
+
+            when 'global-snippets'
+                return @_mockResponse({
+                    'snippets': @_globalSnippets[params['flow']]
+                })
+
             when 'snippets'
                 return @_mockResponse({'snippets': @_snippets[params['flow']]})
+
+            when 'snippet-types'
+                return @_mockResponse({
+                    'snippet_types': @_snippetTypes[params['flow']]
+                })
 
     _mockResponse: (payload) ->
         # Shortcut for building a mock successful API request/response
