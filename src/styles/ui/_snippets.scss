@@ -9,7 +9,7 @@
 
     &--scope-global {
         .ct-snippet__label::before {
-            background: #27ae60;
+            background: #999;
             border-radius: 8px;
             color: #fff;
             content: 'G';
@@ -38,6 +38,10 @@
         &:hover {
             .ct-snippet__label {
                 color: $edit-action-color;
+
+                &:before {
+                    background: $edit-action-color;
+                }
             }
         }
     }

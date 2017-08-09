@@ -64,6 +64,19 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                         ev.detail().snippet.type
                     )
                     result.addEventListener 'load', (ev) =>
+                        flow = ContentFlow.FlowMgr.get().flow()
+
+                        # Unpack the response
+                        payload = JSON.parse(ev.target.responseText).payload
+
+                        # Insert the new snippets HTML into the page
+                        domSnippet = document.createElement('div')
+                        domSnippet.innerHTML = payload['html']
+                        domSnippet = domSnippet.children[0]
+                        domFlow = ContentFlow.getFlowDOMelement(flow)
+                        domFlow.appendChild(domSnippet)
+
+                        # Show the list of snippets now in the flow
                         ContentFlow.FlowMgr.get().loadInterface('list-snippets')
 
             @_body.attach(@_local)
@@ -71,12 +84,13 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
             # Global snippets
             result = flowMgr.api().getGlobalSnippets(flowMgr.flow())
             result.addEventListener 'load', (ev) =>
-                flow = ContentFlow.FlowMgr.get().flow()
 
                 # Unpack the response
                 payload = JSON.parse(ev.target.responseText).payload
 
                 # Add a list of global snippets to choose from
+                flow = ContentFlow.FlowMgr.get().flow()
+                snippetCls = ContentFlow.getSnippetCls(flow)
                 @_global = new ContentFlow.InlaySectionUI('Global scope')
                 for snippetData in payload.snippets
 
@@ -97,6 +111,19 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                             ev.detail().snippet
                         )
                         result.addEventListener 'load', (ev) =>
+                            flow = ContentFlow.FlowMgr.get().flow()
+
+                            # Unpack the response
+                            payload = JSON.parse(ev.target.responseText).payload
+
+                            # Insert the new snippets HTML into the page
+                            domSnippet = document.createElement('div')
+                            domSnippet.innerHTML = payload['html']
+                            domSnippet = domSnippet.children[0]
+                            domFlow = ContentFlow.getFlowDOMelement(flow)
+                            domFlow.appendChild(domSnippet)
+
+                            # Show the list of snippets now in the flow
                             ContentFlow.FlowMgr.get().loadInterface(
                                 'list-snippets'
                             )

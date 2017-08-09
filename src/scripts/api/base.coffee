@@ -49,7 +49,7 @@ class ContentFlow.BaseAPI
         return @_callEndpoint(
             'POST',
             'add-global-snippet',
-            {flow: flow.id, global_snippet: globalSnippet.name}
+            {flow: flow.id, global_snippet: globalSnippet.global_id}
         )
 
     changeSnippetScope: (flow, snippet, scope) ->
@@ -137,6 +137,8 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
 
     # A mock API that returns results than can be tested with
 
+    @_autoInc = 0
+
     constructor: (baseURL='/', baseParams={}) ->
         super(baseURL='/', baseParams={})
 
@@ -162,22 +164,16 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
             ]
         }
 
-        # A list of globals snippets available to the flow
-        @_globalSnippets = {
-            'article-body': [],
-            'article-related': []
-        }
-
         # A list of snippets in the flow
         @_snippets = {
             'article-body': [
                 {
-                    'id': 1,
+                    'id': @constructor._getId(),
                     'type': @_snippetTypes['article-body'][0],
                     'scope': 'local',
                     'settings': {}
                 }, {
-                    'id': 2,
+                    'id': @constructor._getId(),
                     'type': @_snippetTypes['article-body'][1],
                     'scope': 'local',
                     'settings': {}
@@ -185,12 +181,12 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
             ],
             'article-related': [
                 {
-                    'id': 3,
+                    'id': @constructor._getId(),
                     'type': @_snippetTypes['article-related'][1],
                     'scope': 'local',
                     'settings': {}
                 }, {
-                    'id': 4,
+                    'id': @constructor._getId(),
                     'type': @_snippetTypes['article-related'][0],
                     'scope': 'local',
                     'settings': {}
@@ -198,11 +194,87 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
             ]
         }
 
+        # A list of globals snippets available to the flow
+        @_globalSnippets = {
+            'article-body': [
+                {
+                    'id': @constructor._getId(),
+                    'type': @_snippetTypes['article-body'][0],
+                    'scope': 'global',
+                    'settings': {},
+                    'global_id': 'client-logos',
+                    'label': 'Client logos'
+                }
+            ],
+            'article-related': []
+        }
+
+    # Class methods
+
+    @_getId: () ->
+        # Return a unique ID
+        @_autoInc += 1
+        return @_autoInc
+
     # Private methods
 
     _callEndpoint: (method, endpoint, params={}) ->
         # Fake the response of calling a real API
         switch endpoint
+
+            when 'add-snippet'
+
+                # Find the snippet type
+                snippetType = null
+                for snippetType in @_snippetTypes[params['flow']]
+                    if snippetType.id is params['snippet_type']
+                        break
+
+                # Add a new snippet to the state
+                snippet = {
+                    'id': @constructor._getId(),
+                    'type': snippetType,
+                    'scope': 'local',
+                    'settings': {}
+                }
+                @_snippets[params['flow']].push(snippet)
+
+                # Generate some HTML for the snippet and return it
+                return @_mockResponse({
+                    'html': """
+<div class="content-snippet" data-cf-snippet="#{ snippet.id }">
+    <p>This is a new snippet</p>
+</div>
+                    """
+                })
+
+            when 'add-global-snippet'
+
+                # Find the global snippet
+                globalSnippet = null
+                for globalSnippet in @_globalSnippets[params['flow']]
+                    if globalSnippet.global_id is params['global_snippet']
+                        break
+
+                # Add a new snippet to the state
+                snippet = {
+                    'id': @constructor._getId(),
+                    'type': globalSnippet.type,
+                    'scope': globalSnippet.scope,
+                    'settings': globalSnippet.settings,
+                    'global_id': globalSnippet.id,
+                    'label': globalSnippet.label
+                }
+                @_snippets[params['flow']].push(snippet)
+
+                # Generate some HTML for the snippet and return it
+                return @_mockResponse({
+                    'html': """
+<div class="content-snippet" data-cf-snippet="#{ snippet.id }">
+    <p>This is a global snippet: #{ snippet.label }</p>
+</div>
+                    """
+                })
 
             when 'global-snippets'
                 return @_mockResponse({

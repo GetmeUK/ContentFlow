@@ -10687,7 +10687,7 @@
     BaseAPI.prototype.addGlobalSnippet = function(flow, globalSnippet) {
       return this._callEndpoint('POST', 'add-global-snippet', {
         flow: flow.id,
-        global_snippet: globalSnippet.name
+        global_snippet: globalSnippet.global_id
       });
     };
 
@@ -10798,6 +10798,8 @@
   ContentFlow.MockAPI = (function(_super) {
     __extends(MockAPI, _super);
 
+    MockAPI._autoInc = 0;
+
     function MockAPI(baseURL, baseParams) {
       if (baseURL == null) {
         baseURL = '/';
@@ -10826,19 +10828,15 @@
           }
         ]
       };
-      this._globalSnippets = {
-        'article-body': [],
-        'article-related': []
-      };
       this._snippets = {
         'article-body': [
           {
-            'id': 1,
+            'id': this.constructor._getId(),
             'type': this._snippetTypes['article-body'][0],
             'scope': 'local',
             'settings': {}
           }, {
-            'id': 2,
+            'id': this.constructor._getId(),
             'type': this._snippetTypes['article-body'][1],
             'scope': 'local',
             'settings': {}
@@ -10846,25 +10844,84 @@
         ],
         'article-related': [
           {
-            'id': 3,
+            'id': this.constructor._getId(),
             'type': this._snippetTypes['article-related'][1],
             'scope': 'local',
             'settings': {}
           }, {
-            'id': 4,
+            'id': this.constructor._getId(),
             'type': this._snippetTypes['article-related'][0],
             'scope': 'local',
             'settings': {}
           }
         ]
       };
+      this._globalSnippets = {
+        'article-body': [
+          {
+            'id': this.constructor._getId(),
+            'type': this._snippetTypes['article-body'][0],
+            'scope': 'global',
+            'settings': {},
+            'global_id': 'client-logos',
+            'label': 'Client logos'
+          }
+        ],
+        'article-related': []
+      };
     }
 
+    MockAPI._getId = function() {
+      this._autoInc += 1;
+      return this._autoInc;
+    };
+
     MockAPI.prototype._callEndpoint = function(method, endpoint, params) {
+      var globalSnippet, snippet, snippetType, _i, _j, _len, _len1, _ref, _ref1;
       if (params == null) {
         params = {};
       }
       switch (endpoint) {
+        case 'add-snippet':
+          snippetType = null;
+          _ref = this._snippetTypes[params['flow']];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            snippetType = _ref[_i];
+            if (snippetType.id === params['snippet_type']) {
+              break;
+            }
+          }
+          snippet = {
+            'id': this.constructor._getId(),
+            'type': snippetType,
+            'scope': 'local',
+            'settings': {}
+          };
+          this._snippets[params['flow']].push(snippet);
+          return this._mockResponse({
+            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a new snippet</p>\n</div>"
+          });
+        case 'add-global-snippet':
+          globalSnippet = null;
+          _ref1 = this._globalSnippets[params['flow']];
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            globalSnippet = _ref1[_j];
+            if (globalSnippet.global_id === params['global_snippet']) {
+              break;
+            }
+          }
+          snippet = {
+            'id': this.constructor._getId(),
+            'type': globalSnippet.type,
+            'scope': globalSnippet.scope,
+            'settings': globalSnippet.settings,
+            'global_id': globalSnippet.id,
+            'label': globalSnippet.label
+          };
+          this._snippets[params['flow']].push(snippet);
+          return this._mockResponse({
+            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a global snippet: " + snippet.label + "</p>\n</div>"
+          });
         case 'global-snippets':
           return this._mockResponse({
             'snippets': this._globalSnippets[params['flow']]
@@ -11846,6 +11903,14 @@
               result = flowMgr.api().addSnippet(flowMgr.flow(), ev.detail().snippet.type);
               return result.addEventListener('load', (function(_this) {
                 return function(ev) {
+                  var domFlow, domSnippet;
+                  flow = ContentFlow.FlowMgr.get().flow();
+                  payload = JSON.parse(ev.target.responseText).payload;
+                  domSnippet = document.createElement('div');
+                  domSnippet.innerHTML = payload['html'];
+                  domSnippet = domSnippet.children[0];
+                  domFlow = ContentFlow.getFlowDOMelement(flow);
+                  domFlow.appendChild(domSnippet);
                   return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
                 };
               })(this));
@@ -11854,9 +11919,10 @@
           _this._body.attach(_this._local);
           result = flowMgr.api().getGlobalSnippets(flowMgr.flow());
           return result.addEventListener('load', function(ev) {
-            var snippet, snippetData, _k, _len2, _ref2;
-            flow = ContentFlow.FlowMgr.get().flow();
+            var snippet, snippetCls, snippetData, _k, _len2, _ref2;
             payload = JSON.parse(ev.target.responseText).payload;
+            flow = ContentFlow.FlowMgr.get().flow();
+            snippetCls = ContentFlow.getSnippetCls(flow);
             _this._global = new ContentFlow.InlaySectionUI('Global scope');
             _ref2 = payload.snippets;
             for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
@@ -11869,6 +11935,14 @@
                 result = flowMgr.api().addGlobalSnippet(flowMgr.flow(), ev.detail().snippet);
                 return result.addEventListener('load', (function(_this) {
                   return function(ev) {
+                    var domFlow, domSnippet;
+                    flow = ContentFlow.FlowMgr.get().flow();
+                    payload = JSON.parse(ev.target.responseText).payload;
+                    domSnippet = document.createElement('div');
+                    domSnippet.innerHTML = payload['html'];
+                    domSnippet = domSnippet.children[0];
+                    domFlow = ContentFlow.getFlowDOMelement(flow);
+                    domFlow.appendChild(domSnippet);
                     return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
                   };
                 })(this));
