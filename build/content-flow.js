@@ -10877,7 +10877,7 @@
     };
 
     MockAPI.prototype._callEndpoint = function(method, endpoint, params) {
-      var globalSnippet, snippet, snippetType, _i, _j, _len, _len1, _ref, _ref1;
+      var globalSnippet, newSnippets, snippet, snippetType, snippets, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (params == null) {
         params = {};
       }
@@ -10922,6 +10922,17 @@
           return this._mockResponse({
             'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a global snippet: " + snippet.label + "</p>\n</div>"
           });
+        case 'delete-snippet':
+          snippets = this._snippets[params['flow']];
+          newSnippets = [];
+          for (_k = 0, _len2 = snippets.length; _k < _len2; _k++) {
+            snippet = snippets[_k];
+            if (snippet.id !== params['snippet']) {
+              newSnippets.push(snippet);
+            }
+          }
+          this._snippets[params['flow']] = newSnippets;
+          return this._mockResponse();
         case 'global-snippets':
           return this._mockResponse({
             'snippets': this._globalSnippets[params['flow']]
@@ -10938,10 +10949,14 @@
     };
 
     MockAPI.prototype._mockResponse = function(payload) {
-      return new MockRequest(JSON.stringify({
-        'status': 'success',
-        'payload': payload
-      }));
+      var response;
+      response = {
+        'status': 'success'
+      };
+      if (payload) {
+        response['payload'] = payload;
+      }
+      return new MockRequest(JSON.stringify(response));
     };
 
     return MockAPI;
@@ -12032,13 +12047,15 @@
               if (confirm(msg)) {
                 flowMgr = ContentFlow.FlowMgr.get();
                 result = flowMgr.api().deleteSnippet(flowMgr.flow(), ev.detail().snippet);
-                _removeSnippet = function(snippet) {
+                _removeSnippet = function(flow, snippet) {
                   return function(ev) {
-                    ContentFlow.getSnippetDOMElement(snippet);
+                    var domSnippet;
+                    domSnippet = ContentFlow.getSnippetDOMElement(flow, snippet);
+                    domSnippet.remove();
                     return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
                   };
                 };
-                return result.addEventListener('load', _removeSnippet(snippet));
+                return result.addEventListener('load', _removeSnippet(flowMgr.flow(), ev.detail().snippet));
               }
             });
           }

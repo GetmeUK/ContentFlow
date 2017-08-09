@@ -276,6 +276,17 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
                     """
                 })
 
+            when 'delete-snippet'
+                # Remove the snippet from the flow
+                snippets = @_snippets[params['flow']]
+                newSnippets = []
+                for snippet in snippets
+                    unless snippet.id is params['snippet']
+                        newSnippets.push(snippet)
+                @_snippets[params['flow']] = newSnippets
+
+                return @_mockResponse()
+
             when 'global-snippets'
                 return @_mockResponse({
                     'snippets': @_globalSnippets[params['flow']]
@@ -291,6 +302,7 @@ class ContentFlow.MockAPI extends ContentFlow.BaseAPI
 
     _mockResponse: (payload) ->
         # Shortcut for building a mock successful API request/response
-        return new MockRequest(
-            JSON.stringify({'status': 'success', 'payload': payload})
-        )
+        response = {'status': 'success'}
+        if payload
+            response['payload'] = payload
+        return new MockRequest(JSON.stringify(response))

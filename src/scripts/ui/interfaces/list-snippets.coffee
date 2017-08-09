@@ -93,17 +93,23 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
                             ev.detail().snippet
                         )
 
-                        _removeSnippet = (snippet) ->
+                        _removeSnippet = (flow, snippet) ->
                             return (ev) ->
                                 # Remove the snippet from the page
-                                ContentFlow.getSnippetDOMElement(snippet)
+                                domSnippet = ContentFlow.getSnippetDOMElement(
+                                    flow,
+                                    snippet
+                                )
+                                domSnippet.remove()
+
+                                # Show the list of snippets now in the flow
                                 ContentFlow.FlowMgr.get().loadInterface(
                                     'list-snippets'
                                 )
 
                         result.addEventListener(
                             'load',
-                            _removeSnippet(snippet)
+                            _removeSnippet(flowMgr.flow(), ev.detail().snippet)
                         )
 
             # (Re)mount the body
