@@ -24,7 +24,7 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
             flowMgr = ContentFlow.FlowMgr.get()
             result = flowMgr.api().orderSnippets(
                 flowMgr.flow(),
-                @_newSnippetsOrder
+                @_newSnippetOrder
             )
             result.addEventListener 'load', (ev) =>
                 ContentFlow.FlowMgr.get().loadInterface('list-snippets')
@@ -48,10 +48,10 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
             # so that we can save it.
             @_snippets = {}
             @_originalSnippetOrder = []
-            @_newOrder = []
+            @_newSnippetOrder = []
 
             # Unpack the response
-            payload = JSON.parse(ev.target.responseText)
+            payload = JSON.parse(ev.target.responseText).payload
 
             # Remove existing snippets from the interface
             for child in @_body.children
@@ -60,24 +60,25 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
             # Add snippets
             flow = ContentFlow.FlowMgr.get().flow()
             snippetCls = ContentFlow.getSnippetCls(flow)
-            for snippetData of payload.snippets
+            for snippetData in payload.snippets
                 snippet = snippetCls.fromJSONType(flow, snippetData)
                 @_snippets[snippet.id] = snippet
                 @_originalSnippetOrder.push(snippet)
-                @_body.attach(new ContentFlow.SnippetUI(snippet, 'manage'))
+                @_newSnippetOrder.push(snippet)
+                @_body.attach(new ContentFlow.SnippetUI(snippet, 'order'))
 
             # (Re)mount the body
             @_body.unmount()
             @_body.mount()
 
             # Set-up sorting
-            @_sorter = new Sortable(@_body.domElement())
+            @_sorter = new ManhattanSortable.Sortable(@_body.domElement())
 
             # Handle sort events
             @_body.domElement().addEventListener 'mh-sortable--sorted', (ev) =>
                 @_newSnippetOrder = []
                 for child in ev.children
-                    id = ContentFlow.getSnippetIdFromDOMElement(child)
+                    id = child.dataset.snippetId
                     @_newSnippetOrder.push(@_snippets[id])
                 @_orderSnippetsOnPage(@_newSnippetOrder)
 
@@ -95,13 +96,17 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
     _orderSnippetsOnPage: (snippets) ->
         # Set the DOM elements represented as snippets within the page to the
         # order of the list of snippets provided.
+        flow = ContentFlow.FlowMgr.get().flow()
 
         for snippet, i in snippets
-            if i = 0
+            if i is 0
                 continue
 
-            domLastSnippet = ContentFlow.getSnippetDOMElement(snippets[i - 1])
-            domSnippet = ContentFlow.getSnippetDOMElement(snippet)
+            domLastSnippet = ContentFlow.getSnippetDOMElement(
+                flow,
+                snippets[i - 1]
+            )
+            domSnippet = ContentFlow.getSnippetDOMElement(flow, snippet)
 
             # Check we need to move the snippet
             if domLastSnippet.nextSibling is domSnippet

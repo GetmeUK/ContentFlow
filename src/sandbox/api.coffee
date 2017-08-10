@@ -182,6 +182,20 @@ class MockAPI extends ContentFlow.BaseAPI
                     'snippets': @_globalSnippets[params['flow']]
                 })
 
+            when 'order-snippets'
+                # Build a look up table for snippets by Id
+                snippets = {}
+                for snippet in @_snippets[params['flow']]
+                    snippets[snippet.id] = snippet
+
+                # Order the snippets
+                newSnippets = []
+                for id in params['snippets']
+                    newSnippets.push(snippets[id])
+                @_snippets[params['flow']] = newSnippets
+
+                return @_mockResponse()
+
             when 'snippets'
                 return @_mockResponse({'snippets': @_snippets[params['flow']]})
 

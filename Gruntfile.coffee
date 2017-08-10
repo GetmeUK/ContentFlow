@@ -76,6 +76,7 @@ module.exports = (grunt) ->
         concat:
             build:
                 src: [
+                    'node_modules/manhattan-sortable/dist/index.js',
                     'node_modules/ContentTools/build/content-tools.js',
                     'src/tmp/content-flow.js'
                 ]

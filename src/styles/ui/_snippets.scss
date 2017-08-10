@@ -166,3 +166,29 @@
         }
     }
 }
+
+// Sorting styles
+.ct-snippet.mh-sortable-ghost {
+    background: #f8f8f8 !important;
+    color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.ct-snippet.mh-sortable-helper {
+    background: #fff !important;
+    z-index: 9999 !important;
+}
+
+.mh-sortable {
+    .ct-snippet {
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
+        cursor: grab;
+    }
+    &--sorting {
+        .ct-snippet {
+            cursor: -moz-grabbing;
+            cursor: -webkit-grabbing;
+            cursor: grabbing;
+        }
+    }
+}

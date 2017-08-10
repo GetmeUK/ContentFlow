@@ -17,7 +17,7 @@ ContentFlow =
 
     getFlowIdFromDOMElement: (element) ->
         # Return the Id of a content flow from a DOM element
-        return delement.getattr('data-cf-flow')
+        return element.getAttribute('data-cf-flow')
 
     getSnippetCls: (flow) ->
         # Return the snippet model class to use for the application
@@ -29,7 +29,7 @@ ContentFlow =
 
     getSnippetIdFromDOMElement: (element) ->
         # Return the Id of a snippet from a DOM element
-        return delement.getattr('data-cf-snippet')
+        return element.getAttribute('data-cf-snippet')
 
     getSnippetTypeCls: (flow) ->
         # Return the snippet type model class to use for the application

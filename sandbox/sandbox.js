@@ -112,7 +112,7 @@
     };
 
     MockAPI.prototype._callEndpoint = function(method, endpoint, params) {
-      var globalId, globalSnippet, newSnippets, otherSnippet, snippet, snippetType, snippets, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+      var globalId, globalSnippet, id, newSnippets, otherSnippet, snippet, snippetType, snippets, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4;
       if (params == null) {
         params = {};
       }
@@ -172,15 +172,30 @@
           return this._mockResponse({
             'snippets': this._globalSnippets[params['flow']]
           });
+        case 'order-snippets':
+          snippets = {};
+          _ref2 = this._snippets[params['flow']];
+          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+            snippet = _ref2[_l];
+            snippets[snippet.id] = snippet;
+          }
+          newSnippets = [];
+          _ref3 = params['snippets'];
+          for (_m = 0, _len4 = _ref3.length; _m < _len4; _m++) {
+            id = _ref3[_m];
+            newSnippets.push(snippets[id]);
+          }
+          this._snippets[params['flow']] = newSnippets;
+          return this._mockResponse();
         case 'snippets':
           return this._mockResponse({
             'snippets': this._snippets[params['flow']]
           });
         case 'snippet-scope':
           snippet = null;
-          _ref2 = this._snippets[params['flow']];
-          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-            otherSnippet = _ref2[_l];
+          _ref4 = this._snippets[params['flow']];
+          for (_n = 0, _len5 = _ref4.length; _n < _len5; _n++) {
+            otherSnippet = _ref4[_n];
             if (otherSnippet.id === params['snippet']) {
               snippet = otherSnippet;
               break;
