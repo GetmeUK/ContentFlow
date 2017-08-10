@@ -29,7 +29,11 @@ class ContentFlow.DrawUI extends ContentTools.ComponentUI
         super()
 
         # Create the DOM element for the draw and mount it
-        @_domElement = @constructor.createDiv(['ct-draw', 'ct-draw--closed'])
+        @_domElement = @constructor.createDiv([
+            'ct-widget',
+            'ct-draw',
+            'ct-draw--closed'
+        ])
         @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
 

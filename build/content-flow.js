@@ -10399,7 +10399,7 @@
 }).call(this);
 
 (function() {
-  var ContentFlow, MockRequest, exports, _FlowMgr,
+  var ContentFlow, exports, _FlowMgr,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __slice = [].slice;
@@ -10691,11 +10691,15 @@
       });
     };
 
-    BaseAPI.prototype.changeSnippetScope = function(flow, snippet, scope) {
+    BaseAPI.prototype.changeSnippetScope = function(flow, snippet, scope, label) {
+      if (label == null) {
+        label = null;
+      }
       return this._callEndpoint('POST', 'snippet-scope', {
         flow: flow.id,
         snippet: snippet.id,
-        scope: scope
+        scope: scope,
+        label: label
       });
     };
 
@@ -10748,7 +10752,7 @@
           pairs = Object.keys(params).map(function(p) {
             return [p, params[p]].map(encodeURIComponent).join('=');
           });
-          paramsStr = "?" + (pairs.join("&"));
+          paramsStr = "?" + (pairs.join("&")) + "&_=" + (Date.now());
           break;
         case 'delete':
         case 'post':
@@ -10767,201 +10771,6 @@
     return BaseAPI;
 
   })();
-
-  MockRequest = (function() {
-    function MockRequest(responseText) {
-      var mockLoad;
-      this._responseText = responseText;
-      this._listener = null;
-      mockLoad = (function(_this) {
-        return function() {
-          if (_this._listener) {
-            return _this._listener({
-              target: {
-                responseText: responseText
-              }
-            });
-          }
-        };
-      })(this);
-      setTimeout(mockLoad, 0);
-    }
-
-    MockRequest.prototype.addEventListener = function(eventType, listener) {
-      return this._listener = listener;
-    };
-
-    return MockRequest;
-
-  })();
-
-  ContentFlow.MockAPI = (function(_super) {
-    __extends(MockAPI, _super);
-
-    MockAPI._autoInc = 0;
-
-    function MockAPI(baseURL, baseParams) {
-      if (baseURL == null) {
-        baseURL = '/';
-      }
-      if (baseParams == null) {
-        baseParams = {};
-      }
-      MockAPI.__super__.constructor.call(this, baseURL = '/', baseParams = {});
-      this._snippetTypes = {
-        'article-body': [
-          {
-            'id': 'basic',
-            'label': 'Basic'
-          }, {
-            'id': 'advanced',
-            'label': 'Advanced'
-          }
-        ],
-        'article-related': [
-          {
-            'id': 'basic',
-            'label': 'Basic'
-          }, {
-            'id': 'archive',
-            'label': 'Archive'
-          }
-        ]
-      };
-      this._snippets = {
-        'article-body': [
-          {
-            'id': this.constructor._getId(),
-            'type': this._snippetTypes['article-body'][0],
-            'scope': 'local',
-            'settings': {}
-          }, {
-            'id': this.constructor._getId(),
-            'type': this._snippetTypes['article-body'][1],
-            'scope': 'local',
-            'settings': {}
-          }
-        ],
-        'article-related': [
-          {
-            'id': this.constructor._getId(),
-            'type': this._snippetTypes['article-related'][1],
-            'scope': 'local',
-            'settings': {}
-          }, {
-            'id': this.constructor._getId(),
-            'type': this._snippetTypes['article-related'][0],
-            'scope': 'local',
-            'settings': {}
-          }
-        ]
-      };
-      this._globalSnippets = {
-        'article-body': [
-          {
-            'id': this.constructor._getId(),
-            'type': this._snippetTypes['article-body'][0],
-            'scope': 'global',
-            'settings': {},
-            'global_id': 'client-logos',
-            'label': 'Client logos'
-          }
-        ],
-        'article-related': []
-      };
-    }
-
-    MockAPI._getId = function() {
-      this._autoInc += 1;
-      return this._autoInc;
-    };
-
-    MockAPI.prototype._callEndpoint = function(method, endpoint, params) {
-      var globalSnippet, newSnippets, snippet, snippetType, snippets, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-      if (params == null) {
-        params = {};
-      }
-      switch (endpoint) {
-        case 'add-snippet':
-          snippetType = null;
-          _ref = this._snippetTypes[params['flow']];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            snippetType = _ref[_i];
-            if (snippetType.id === params['snippet_type']) {
-              break;
-            }
-          }
-          snippet = {
-            'id': this.constructor._getId(),
-            'type': snippetType,
-            'scope': 'local',
-            'settings': {}
-          };
-          this._snippets[params['flow']].push(snippet);
-          return this._mockResponse({
-            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a new snippet</p>\n</div>"
-          });
-        case 'add-global-snippet':
-          globalSnippet = null;
-          _ref1 = this._globalSnippets[params['flow']];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            globalSnippet = _ref1[_j];
-            if (globalSnippet.global_id === params['global_snippet']) {
-              break;
-            }
-          }
-          snippet = {
-            'id': this.constructor._getId(),
-            'type': globalSnippet.type,
-            'scope': globalSnippet.scope,
-            'settings': globalSnippet.settings,
-            'global_id': globalSnippet.id,
-            'label': globalSnippet.label
-          };
-          this._snippets[params['flow']].push(snippet);
-          return this._mockResponse({
-            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a global snippet: " + snippet.label + "</p>\n</div>"
-          });
-        case 'delete-snippet':
-          snippets = this._snippets[params['flow']];
-          newSnippets = [];
-          for (_k = 0, _len2 = snippets.length; _k < _len2; _k++) {
-            snippet = snippets[_k];
-            if (snippet.id !== params['snippet']) {
-              newSnippets.push(snippet);
-            }
-          }
-          this._snippets[params['flow']] = newSnippets;
-          return this._mockResponse();
-        case 'global-snippets':
-          return this._mockResponse({
-            'snippets': this._globalSnippets[params['flow']]
-          });
-        case 'snippets':
-          return this._mockResponse({
-            'snippets': this._snippets[params['flow']]
-          });
-        case 'snippet-types':
-          return this._mockResponse({
-            'snippet_types': this._snippetTypes[params['flow']]
-          });
-      }
-    };
-
-    MockAPI.prototype._mockResponse = function(payload) {
-      var response;
-      response = {
-        'status': 'success'
-      };
-      if (payload) {
-        response['payload'] = payload;
-      }
-      return new MockRequest(JSON.stringify(response));
-    };
-
-    return MockAPI;
-
-  })(ContentFlow.BaseAPI);
 
   ContentFlow.FlowModel = (function() {
     function FlowModel(id, snippetTypes) {
@@ -11064,7 +10873,7 @@
     DrawUI.prototype.mount = function() {
       var child, _i, _len, _ref, _results;
       DrawUI.__super__.mount.call(this);
-      this._domElement = this.constructor.createDiv(['ct-draw', 'ct-draw--closed']);
+      this._domElement = this.constructor.createDiv(['ct-widget', 'ct-draw', 'ct-draw--closed']);
       this.parent().domElement().appendChild(this._domElement);
       this._addDOMEventListeners();
       _ref = this.children();
@@ -11136,7 +10945,7 @@
       if (!this.isMounted()) {
         throw Error('Cannot set error for unmounted field');
       }
-      if (value === void 0) {
+      if (errors === void 0) {
         errors = [];
         _ref = this._domErrors.querySelector('.ct-field__error');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11213,11 +11022,6 @@
       return BooleanFieldUI.__super__.constructor.apply(this, arguments);
     }
 
-    BooleanFieldUI.prototype.mount = function() {
-      BooleanFieldUI.__super__.mount.call(this);
-      return this._domElement.classList.add('ct-field--boolean');
-    };
-
     BooleanFieldUI.prototype.mount_input = function() {
       this._domInput = document.createElement('input');
       this._domInput.classList.add('ct-field__input');
@@ -11263,9 +11067,8 @@
       return this.choices;
     };
 
-    SelectFieldUI.prototype.mount = function() {
+    SelectFieldUI.prototype.mount_input = function() {
       var choice, _i, _len, _ref;
-      SelectFieldUI.__super__.mount.call(this);
       this._domInput = document.createElement('select');
       this._domInput.classList.add('ct-field__input');
       this._domInput.classList.add('ct-field__input--select');
@@ -11296,15 +11099,14 @@
       return TextFieldUI.__super__.constructor.apply(this, arguments);
     }
 
-    TextFieldUI.prototype.mount = function() {
-      TextFieldUI.__super__.mount.call(this);
+    TextFieldUI.prototype.mount_input = function() {
       this._domInput = document.createElement('input');
       this._domInput.classList.add('ct-field__input');
       this._domInput.classList.add('ct-field__input--text');
       this._domInput.setAttribute('id', this._name);
       this._domInput.setAttribute('name', this._name);
       this._domInput.setAttribute('type', 'text');
-      this._domInput.setAttribute('value', this._initialValue);
+      this._domInput.setAttribute('value', this._initialValue === void 0 ? '' : this._initialValue);
       return this._domElement.appendChild(this._domInput);
     };
 
@@ -12036,7 +11838,7 @@
             uiSnippet.addEventListener('scope', function(ev) {
               var scope;
               scope = 'local';
-              if (snippet.scope === 'global') {
+              if (ev.detail().snippet.scope === 'local') {
                 scope = 'global';
               }
               return ContentFlow.FlowMgr.get().loadInterface("make-snippet-" + scope, ev.detail().snippet);
@@ -12090,14 +11892,14 @@
         return function(ev) {
           var flowMgr, result;
           flowMgr = ContentFlow.FlowMgr.get();
-          result = flowMgr.api().changeSnippetScope(flowMgr.flow(), _this._snippet, 'global');
+          result = flowMgr.api().changeSnippetScope(flowMgr.flow(), _this._snippet, 'global', _this._labelField.value());
           return result.addEventListener('load', function(ev) {
-            var payload;
-            payload = JSON.parse(ev.target.responseText);
+            var response;
+            response = JSON.parse(ev.target.responseText);
             if (response.status === 'success') {
               return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
             } else {
-              return _this._labelField.errors([response.payload.reason]);
+              return _this._labelField.errors([response.errors.label]);
             }
           });
         };
@@ -12113,8 +11915,9 @@
       var note;
       MakeSnippetGlobalUI.__super__.init.call(this);
       this._snippet = snippet;
+      this._labelField = new ContentFlow.TextFieldUI('label', 'Label', true);
       this._body.attach(this._labelField);
-      note = new ContentFlow.InlayNoteUI(ContentEdit._('Once you make a snippet global it can be dragged into other pages\nand changes made to the snippet&apos;s content or settings will be\napplied to all instances of the snippet.'));
+      note = new ContentFlow.InlayNoteUI(ContentEdit._('Once you make a snippet global it can be inserted into other pages\nand changes made to the snippet&apos;s content or settings will be\napplied to all instances of the snippet.'));
       this._body.attach(note);
       this._body.unmount();
       return this._body.mount();

@@ -37,6 +37,7 @@ module.exports = (grunt) ->
             sandbox:
                 files:
                     'sandbox/sandbox.js': [
+                        'src/sandbox/api.coffee'
                         'src/sandbox/sandbox.coffee'
                         ]
 

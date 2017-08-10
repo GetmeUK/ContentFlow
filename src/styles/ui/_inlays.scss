@@ -1,147 +1,153 @@
-.ct-inlay {
+.ct-widget {
+    .ct-inlay {
 
-    &__header {
-        box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
-        padding: 20px;
+        &__header {
+            box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+            padding: 20px 10px;
+            @include align-items(center);
+            @include display(flex);
+        }
+
+        &__heading {
+            color: #6a6a6a;
+            font-size: 22px;
+            line-height: 30px;
+            @include ellipsis();
+            @include flex(1);
+        }
+
+        &__tools {
+            @include display(flex);
+            @include flex(0 0 auto);
+        }
+
+        &__body {
+            height: calc(100vh - 72px);
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            &::-webkit-scrollbar-track {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            &::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background-color: rgba(0, 0, 0, 0.25);
+            }
+        }
+    }
+
+    .ct-inlay-tool {
+        $button-size: 32px;
+
+        border-radius: 2px;
+        cursor: pointer;
+        display: block;
+        height: 32px;
+        margin-right: 8px;
+        position: relative;
+        width: 32px;
+
         @include align-items(center);
         @include display(flex);
-    }
+        @include justify-content(center);
 
-    &__heading {
-        color: #6a6a6a;
-        font-size: 22px;
-        line-height: 30px;
-        @include ellipsis();
-        @include flex(1);
-    }
-
-    &__tools {
-        @include display(flex);
-        @include flex(0 0 auto);
-    }
-
-    &__body {
-        height: calc(100vh - 72px);
-        overflow-x: hidden;
-        overflow-y: auto;
-
-        &::-webkit-scrollbar-track {
-            background-color: rgba(0, 0, 0, 0.1);
+        &:last-child {
+            margin-right: 0;
         }
 
-        &::-webkit-scrollbar {
-            width: 5px;
+        &:hover {
+            background-color: rgba(#000, 0.1);
+
+            &::before {
+                opacity: 0.8;
+                visibility: visible;
+                @include transition(opacity 0s ease-in);
+                @include transition-delay(2s);
+            }
+
+            &::after {
+                color: $edit-action-color;
+            }
         }
 
-        &::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.25);
+        &:active,
+        &:focus {
+            background-color: rgba(#000, 0.1);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
         }
-    }
-}
-
-.ct-inlay-tool {
-    $button-size: 32px;
-
-    border-radius: 2px;
-    cursor: pointer;
-    display: block;
-    height: 32px;
-    position: relative;
-    width: 32px;
-    @include align-items(center);
-    @include display(flex);
-    @include justify-content(center);
-
-    &:hover {
-        background-color: rgba(#000, 0.1);
 
         &::before {
-            opacity: 0.8;
-            visibility: visible;
-            @include transition(opacity 0s ease-in);
-            @include transition-delay(2s);
+            background-color: #000;
+            border-radius: 3px 3px 0 3px;
+            color: #fff;
+            content: attr(data-ct-tooltip);
+            display: block;
+            font-family: arial, sans-serif;
+            font-size: 12px;
+            hyphens: auto;
+            line-height: 20px;
+            opacity: 0;
+            padding: 0 8px;
+            text-align: center;
+            visibility: hidden;
+            width: 85px;
+            word-break: break-word;
+            z-index: 1;
+            @include position(absolute, null null 24px -94px);
         }
 
         &::after {
-            color: $edit-action-color;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: 24px 24px;
+            color: #999;
+            display: block;
+            height: $button-size;
+            line-height: $button-size;
+            text-align: center;
+            width: $button-size;
+
+            @include type-icons($font-size: 16px);
+        }
+
+        // Set of tool icon modifiers
+
+        &--add::after {
+            content: '\ea0a';
+        }
+
+        &--cancel::after {
+            content: '\ea0f';
+        }
+
+        &--confirm::after {
+            content: '\ea10';
+        }
+
+        &--order::after {
+            content: '\e9bd';
         }
     }
 
-    &:active,
-    &:focus {
-        background-color: rgba(#000, 0.1);
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+    .ct-inlay-section {
+        &__heading {
+            box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
+            color: #6a6a6a;
+            font-size: 16px;
+            line-height: 20px;
+            @include ellipsis();
+            padding: 20px 10px 10px;
+            width: 100%;
+        }
     }
 
-    &::before {
-        background-color: #000;
-        border-radius: 3px 3px 0 3px;
-        color: #fff;
-        content: attr(data-ct-tooltip);
-        display: block;
-        font-family: arial, sans-serif;
-        font-size: 12px;
-        hyphens: auto;
-        line-height: 20px;
-        opacity: 0;
-        padding: 0 8px;
-        text-align: center;
-        visibility: hidden;
-        width: 85px;
-        word-break: break-word;
-        z-index: 1;
-        @include position(absolute, null null 24px -94px);
-    }
-
-    &::after {
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-size: 24px 24px;
+    .ct-inlay-note {
         color: #999;
-        display: block;
-        height: $button-size;
-        line-height: $button-size;
-        text-align: center;
-        width: $button-size;
-
-        @include type-icons($font-size: 16px);
+        font-size: 14px;
+        padding: 20px 10px;
     }
-
-    // Set of tool icon modifiers
-
-    &--add::after {
-        content: '\ea0a';
-    }
-
-    &--cancel::after {
-        content: '\ea0f';
-    }
-
-    &--confirm::after {
-        content: '\ea10';
-    }
-
-    &--order::after {
-        content: '\e9bd';
-    }
-}
-
-.ct-inlay-section {
-    padding-bottom: 20px;
-
-    &__heading {
-        box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.1);
-        color: #6a6a6a;
-        font-size: 16px;
-        line-height: 20px;
-        @include ellipsis();
-        padding: 20px 20px 10px;
-        width: 100%;
-    }
-}
-
-.ct-inlay-note {
-    color: #999;
-    font-size: 14px;
-    padding: 20px;
 }

@@ -12,5 +12,5 @@ window.addEventListener 'load', () ->
     flowMgr.init(
         queryOrDOMElements='[data-cf-flow]',
         idProp='data-cf-flow',
-        api=new ContentFlow.MockAPI()
+        api=new MockAPI()
         )

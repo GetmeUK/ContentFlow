@@ -44,7 +44,7 @@ class ContentFlow.FieldUI extends ContentTools.ComponentUI
             throw Error('Cannot set error for unmounted field')
 
         # If no errors are provided return the current errors
-        if value is undefined
+        if errors is undefined
             errors = []
             for domError in @_domErrors.querySelector('.ct-field__error')
                 errors.push(domError.textContent)
@@ -155,10 +155,6 @@ class ContentFlow.BooleanFieldUI extends ContentFlow.FieldUI
 
     # A boolean field component
 
-    mount: () ->
-        super()
-        @_domElement.classList.add('ct-field--boolean')
-
     mount_input: () ->
         # Mount the input element for the field
         @_domInput = document.createElement('input')
@@ -208,9 +204,7 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
 
     # Methods
 
-    mount: () ->
-        super()
-
+    mount_input: () ->
         # Add the select element
         @_domInput = document.createElement('select')
         @_domInput.classList.add('ct-field__input')
@@ -234,9 +228,7 @@ class ContentFlow.TextFieldUI extends ContentFlow.FieldUI
 
     # A text input field component
 
-    mount: () ->
-        super()
-
+    mount_input: () ->
         # Add the input element
         @_domInput = document.createElement('input')
         @_domInput.classList.add('ct-field__input')
@@ -244,5 +236,8 @@ class ContentFlow.TextFieldUI extends ContentFlow.FieldUI
         @_domInput.setAttribute('id', @_name)
         @_domInput.setAttribute('name', @_name)
         @_domInput.setAttribute('type', 'text')
-        @_domInput.setAttribute('value', @_initialValue)
+        @_domInput.setAttribute(
+            'value',
+            if @_initialValue is undefined then '' else @_initialValue
+        )
         @_domElement.appendChild(@_domInput)

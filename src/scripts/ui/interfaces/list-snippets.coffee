@@ -73,7 +73,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
                 # Scope
                 uiSnippet.addEventListener 'scope', (ev) ->
                     scope = 'local'
-                    if snippet.scope is 'global'
+                    if ev.detail().snippet.scope is 'local'
                         scope = 'global'
                     ContentFlow.FlowMgr.get().loadInterface(
                         "make-snippet-#{ scope }",
