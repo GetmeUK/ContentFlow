@@ -239,6 +239,47 @@ class MockAPI extends ContentFlow.BaseAPI
 
                     return @_mockResponse()
 
+            when 'snippet-settings'
+                if method.toLowerCase() is 'get'
+
+                    # Build a dummy set of fields for the response
+                    fields = [
+                        {
+                            'type': 'boolean',
+                            'name': 'boolean_example',
+                            'label': 'Boolean example',
+                            'required': false,
+                            'value': true
+                        }, {
+                            'type': 'select',
+                            'name': 'select_example',
+                            'label': 'Select example',
+                            'required': true,
+                            'value': 1,
+                            'choices': [
+                                [1, 'One'],
+                                [2, 'Two'],
+                                [3, 'Three'],
+                            ]
+                        }, {
+                            'type': 'text',
+                            'name': 'Text_example',
+                            'label': 'Text example',
+                            'required': true,
+                            'value': 'foo'
+                        },
+                    ]
+                    return @_mockResponse({'fields': fields})
+
+                else
+                return @_mockResponse({
+                    'html': """
+<div class="content-snippet" data-cf-snippet="#{ params['snippet'] }">
+    <p>This is a snippet with updated settings</p>
+</div>
+                    """
+                })
+
             when 'snippet-types'
                 return @_mockResponse({
                     'snippet_types': @_snippetTypes[params['flow']]

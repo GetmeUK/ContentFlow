@@ -214,7 +214,7 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
 
         # Add the choices
         for choice in @_choices
-            domOption - document.createElement('option')
+            domOption = document.createElement('option')
             domOption.setAttribute('value', choice[0])
             domOption.textContent = ContentEdit._(choice[1])
             if @_initialValue is choice[0]

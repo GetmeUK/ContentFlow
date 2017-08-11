@@ -20,7 +20,7 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
         @_tools.confirm.addEventListener 'click', (ev) =>
 
             # Check there are settings that can be changed for the snippet
-            unless @_hasSettings
+            unless @_fields
                 ContentFlow.FlowMgr.get().loadInterface('list-snippets')
                 return
 
@@ -39,15 +39,15 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
             result.addEventListener 'load', (ev) =>
 
                 # Unpack the response
-                payload = JSON.parse(ev.target.responseText)
+                response = JSON.parse(ev.target.responseText)
 
                 # Handle the response
                 if response.status is 'success'
-                    flowMgr = ContentFlow.FlowMgr.get().flow()
+                    flow = ContentFlow.FlowMgr.get().flow()
 
                     # Find current snippet element in the DOM
                     originalElement = ContentFlow.getSnippetDOMElement(
-                        flowMgr.flow(),
+                        flow,
                         @_snippet
                     )
 
@@ -90,7 +90,7 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
             # Check there's at least one field in the settings form
             unless payload.fields
                 # Flag the form as empty
-                this._fields = null
+                @_fields = null
 
                 # Add a note letting the user know there's no settings to
                 # change.

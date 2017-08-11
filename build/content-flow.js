@@ -11069,7 +11069,7 @@
     };
 
     SelectFieldUI.prototype.mount_input = function() {
-      var choice, _i, _len, _ref;
+      var choice, domOption, _i, _len, _ref;
       this._domInput = document.createElement('select');
       this._domInput.classList.add('ct-field__input');
       this._domInput.classList.add('ct-field__input--select');
@@ -11078,7 +11078,7 @@
       _ref = this._choices;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         choice = _ref[_i];
-        domOption - document.createElement('option');
+        domOption = document.createElement('option');
         domOption.setAttribute('value', choice[0]);
         domOption.textContent = ContentEdit._(choice[1]);
         if (this._initialValue === choice[0]) {
@@ -12096,7 +12096,7 @@
       this._tools.confirm.addEventListener('click', (function(_this) {
         return function(ev) {
           var field, flowMgr, result, settings, _, _i, _len, _ref;
-          if (!_this._hasSettings) {
+          if (!_this._fields) {
             ContentFlow.FlowMgr.get().loadInterface('list-snippets');
             return;
           }
@@ -12109,11 +12109,11 @@
           flowMgr = ContentFlow.FlowMgr.get();
           result = flowMgr.api().changeSnippetSettings(flowMgr.flow(), _this._snippet, settings);
           return result.addEventListener('load', function(ev) {
-            var errors, fieldName, newElement, originalElement, payload, _j, _len1, _ref1, _results;
-            payload = JSON.parse(ev.target.responseText);
+            var errors, fieldName, flow, newElement, originalElement, response, _j, _len1, _ref1, _results;
+            response = JSON.parse(ev.target.responseText);
             if (response.status === 'success') {
-              flowMgr = ContentFlow.FlowMgr.get().flow();
-              originalElement = ContentFlow.getSnippetDOMElement(flowMgr.flow(), _this._snippet);
+              flow = ContentFlow.FlowMgr.get().flow();
+              originalElement = ContentFlow.getSnippetDOMElement(flow, _this._snippet);
               newElement = document.createElement('div');
               newElement.innerHTML = response.payload['html'];
               newElement = newElement.children[0];

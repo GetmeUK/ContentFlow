@@ -112,7 +112,7 @@
     };
 
     MockAPI.prototype._callEndpoint = function(method, endpoint, params) {
-      var globalId, globalSnippet, id, newSnippets, otherSnippet, snippet, snippetType, snippets, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4;
+      var fields, globalId, globalSnippet, id, newSnippets, otherSnippet, snippet, snippetType, snippets, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4;
       if (params == null) {
         params = {};
       }
@@ -227,6 +227,39 @@
             return this._mockResponse();
           }
           break;
+        case 'snippet-settings':
+          if (method.toLowerCase() === 'get') {
+            fields = [
+              {
+                'type': 'boolean',
+                'name': 'boolean_example',
+                'label': 'Boolean example',
+                'required': false,
+                'value': true
+              }, {
+                'type': 'select',
+                'name': 'select_example',
+                'label': 'Select example',
+                'required': true,
+                'value': 1,
+                'choices': [[1, 'One'], [2, 'Two'], [3, 'Three']]
+              }, {
+                'type': 'text',
+                'name': 'Text_example',
+                'label': 'Text example',
+                'required': true,
+                'value': 'foo'
+              }
+            ];
+            return this._mockResponse({
+              'fields': fields
+            });
+          } else {
+
+          }
+          return this._mockResponse({
+            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + params['snippet'] + "\">\n    <p>This is a snippet with updated settings</p>\n</div>"
+          });
         case 'snippet-types':
           return this._mockResponse({
             'snippet_types': this._snippetTypes[params['flow']]
