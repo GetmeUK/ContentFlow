@@ -7,6 +7,11 @@ ContentFlow =
         if element
             element.classList.remove('cf--highlight-snippet')
 
+    dimAllSnippetDOMElements: () ->
+        # Remove the highlight from all snippets within the page
+        for element in document.querySelectorAll('.cf--highlight-snippet')
+            element.classList.remove('cf--highlight-snippet')
+
     getFlowCls: () ->
         # Return the content flow model class to use for the application
         return ContentFlow.FlowModel

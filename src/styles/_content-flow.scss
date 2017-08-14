@@ -1,6 +1,5 @@
-$image-path-prefix: '../build/images/';
+$image-path-prefix: '../build/images/' default;
 
-@import '../../node_modules/ContentTools/src/styles/content-tools';
 @import './ui/ui';
 
 

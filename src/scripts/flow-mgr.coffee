@@ -117,6 +117,9 @@ class _FlowMgr extends ContentTools.ComponentUI
         if @_flow is flow
             return
 
+        # Dim any highlighted snippets
+        ContentFlow.dimAllSnippetDOMElements()
+
         # Update the flow and load the list snippets interface
         @_flow = flow
         ContentFlow.FlowMgr.get().loadInterface('list-snippets')

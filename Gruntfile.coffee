@@ -36,7 +36,7 @@ module.exports = (grunt) ->
 
             sandbox:
                 files:
-                    'sandbox/sandbox.js': [
+                    'src/tmp/sandbox.js': [
                         'src/sandbox/api.coffee'
                         'src/sandbox/sandbox.coffee'
                         ]
@@ -49,7 +49,7 @@ module.exports = (grunt) ->
             build:
                 files:
                     'build/content-flow.min.css':
-                        'src/styles/content-flow.scss'
+                        'src/styles/build.scss'
 
             sandbox:
                 files:
@@ -76,11 +76,15 @@ module.exports = (grunt) ->
         concat:
             build:
                 src: [
-                    'node_modules/manhattan-sortable/dist/index.js',
-                    'node_modules/ContentTools/build/content-tools.js',
                     'src/tmp/content-flow.js'
                 ]
                 dest: 'build/content-flow.js'
+
+            sandbox:
+                src: [
+                    'src/tmp/sandbox.js'
+                    ]
+                dest: 'sandbox/sandbox.js'
 
         clean:
             build: ['src/tmp']
@@ -123,6 +127,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'sandbox', [
         'coffee:sandbox'
+        'concat:sandbox'
         'sass:sandbox'
     ]
 
