@@ -1,7 +1,7 @@
 {
   "name": "content-flow",
   "description": "An extension to the ContentTools WYSIWYG editor to manage content flows",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": [
     "wysiwyg",
     "inline",
@@ -25,11 +25,11 @@
     "grunt-contrib-sass": "^0.8.1",
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-cssnano": "^2.1.0"
+    "grunt-cssnano": "^2.1.0",
+    "manhattan-sortable": "^0.0.3"
   },
   "dependencies": {
-    "ContentTools": "^1.4.0",
-    "manhattan-sortable": "^0.0.3"
+    "ContentTools": "^1.4.0"
   },
   "scripts": {
     "test": "grunt jasmine --verbose"
