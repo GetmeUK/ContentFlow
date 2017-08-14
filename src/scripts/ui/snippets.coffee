@@ -44,8 +44,8 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
 
         # Label
         @_domLabel = @constructor.createDiv(['ct-snippet__label'])
-        if @_snippet.label
-            @_domLabel.textContent = @_snippet.label
+        if @_snippet.globalLabel
+            @_domLabel.textContent = @_snippet.globalLabel
         else
             @_domLabel.textContent = @_snippet.type.label
         @_domElement.appendChild(@_domLabel)

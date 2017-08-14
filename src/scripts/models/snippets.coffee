@@ -11,7 +11,7 @@ class ContentFlow.SnippetModel
         scope='local',
         settings={},
         globalId=null,
-        label=null
+        globalLabel=null
         ) ->
 
         # A unique Id (at least within the flow) for the snippet
@@ -33,7 +33,7 @@ class ContentFlow.SnippetModel
         # The label (which should be unique within the global snippets
         # available to the content flow) makes it easy for users to identify
         # global snippets of the same type.
-        @label = label
+        @globalLabel = globalLabel
 
     # Class methods
 
@@ -46,7 +46,7 @@ class ContentFlow.SnippetModel
             jsonTypeData.scope,
             jsonTypeData.settings,
             jsonTypeData.global_id,
-            jsonTypeData.label
+            jsonTypeData.global_label
         )
 
 
@@ -77,5 +77,5 @@ class ContentFlow.SnippetTypeModel
         return new ContentFlow.SnippetTypeModel(
             jsonTypeData.id,
             jsonTypeData.label,
-            jsonTypeData.imageURL
+            jsonTypeData.image_url
         )

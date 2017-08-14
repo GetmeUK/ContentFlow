@@ -192,7 +192,9 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
     # A select field component
 
     constructor: (name, label, required, initialValue, choices) ->
-        super(name, label, required, initialValue, choices)
+        super(name, label, required, initialValue)
+
+        console.log initialValue
 
         # The choices for the select field
         @_choices = choices
@@ -218,7 +220,7 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
             domOption.setAttribute('value', choice[0])
             domOption.textContent = ContentEdit._(choice[1])
             if @_initialValue is choice[0]
-                @_domInput.setAttribute('selected', true)
+                domOption.setAttribute('selected', true)
             @_domInput.appendChild(domOption)
 
         @_domElement.appendChild(@_domInput)

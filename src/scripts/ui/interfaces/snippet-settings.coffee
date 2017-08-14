@@ -26,7 +26,7 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
 
             # Convert the form values into a settings object
             settings = {}
-            for _, field in @_fields
+            for _, field of @_fields
                 settings[field.name()] = field.value()
 
             # Call the API to request the change to the snippet's settings

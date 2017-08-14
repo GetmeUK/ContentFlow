@@ -285,7 +285,8 @@
 
     BaseAPI.prototype.getSnippetSettingsForm = function(flow, snippet) {
       return this._callEndpoint('GET', 'snippet-settings', {
-        flow: flow.id
+        flow: flow.id,
+        snippet: snippet.id
       });
     };
 
@@ -299,7 +300,7 @@
     BaseAPI.prototype.addGlobalSnippet = function(flow, globalSnippet) {
       return this._callEndpoint('POST', 'add-global-snippet', {
         flow: flow.id,
-        global_snippet: globalSnippet.global_id
+        global_snippet: globalSnippet.globalId
       });
     };
 
@@ -376,7 +377,7 @@
           }
       }
       xhr.open(method, "" + this.baseURL + endpoint + paramsStr);
-      xhr.send();
+      xhr.send(formData);
       return xhr;
     };
 
@@ -409,7 +410,7 @@
   })();
 
   ContentFlow.SnippetModel = (function() {
-    function SnippetModel(id, type, scope, settings, globalId, label) {
+    function SnippetModel(id, type, scope, settings, globalId, globalLabel) {
       if (scope == null) {
         scope = 'local';
       }
@@ -419,21 +420,21 @@
       if (globalId == null) {
         globalId = null;
       }
-      if (label == null) {
-        label = null;
+      if (globalLabel == null) {
+        globalLabel = null;
       }
       this.id = id;
       this.type = type;
       this.scope = scope;
       this.settings = settings;
       this.globalId = globalId;
-      this.label = label;
+      this.globalLabel = globalLabel;
     }
 
     SnippetModel.fromJSONType = function(flow, jsonTypeData) {
       var snippetTypeClass;
       snippetTypeClass = ContentFlow.getSnippetTypeCls(flow);
-      return new ContentFlow.SnippetModel(jsonTypeData.id, snippetTypeClass.fromJSONType(flow, jsonTypeData.type), jsonTypeData.scope, jsonTypeData.settings, jsonTypeData.global_id, jsonTypeData.label);
+      return new ContentFlow.SnippetModel(jsonTypeData.id, snippetTypeClass.fromJSONType(flow, jsonTypeData.type), jsonTypeData.scope, jsonTypeData.settings, jsonTypeData.global_id, jsonTypeData.global_label);
     };
 
     return SnippetModel;
@@ -455,7 +456,7 @@
     };
 
     SnippetTypeModel.fromJSONType = function(flow, jsonTypeData) {
-      return new ContentFlow.SnippetTypeModel(jsonTypeData.id, jsonTypeData.label, jsonTypeData.imageURL);
+      return new ContentFlow.SnippetTypeModel(jsonTypeData.id, jsonTypeData.label, jsonTypeData.image_url);
     };
 
     return SnippetTypeModel;
@@ -671,7 +672,8 @@
     __extends(SelectFieldUI, _super);
 
     function SelectFieldUI(name, label, required, initialValue, choices) {
-      SelectFieldUI.__super__.constructor.call(this, name, label, required, initialValue, choices);
+      SelectFieldUI.__super__.constructor.call(this, name, label, required, initialValue);
+      console.log(initialValue);
       this._choices = choices;
     }
 
@@ -693,7 +695,7 @@
         domOption.setAttribute('value', choice[0]);
         domOption.textContent = ContentEdit._(choice[1]);
         if (this._initialValue === choice[0]) {
-          this._domInput.setAttribute('selected', true);
+          domOption.setAttribute('selected', true);
         }
         this._domInput.appendChild(domOption);
       }
@@ -1080,8 +1082,8 @@
       }
       this._domElement.appendChild(this._domPreview);
       this._domLabel = this.constructor.createDiv(['ct-snippet__label']);
-      if (this._snippet.label) {
-        this._domLabel.textContent = this._snippet.label;
+      if (this._snippet.globalLabel) {
+        this._domLabel.textContent = this._snippet.globalLabel;
       } else {
         this._domLabel.textContent = this._snippet.type.label;
       }
@@ -1706,21 +1708,21 @@
       this._header.tools().attach(this._tools.cancel);
       this._tools.confirm.addEventListener('click', (function(_this) {
         return function(ev) {
-          var field, flowMgr, result, settings, _, _i, _len, _ref;
+          var field, flowMgr, result, settings, _, _ref;
           if (!_this._fields) {
             ContentFlow.FlowMgr.get().loadInterface('list-snippets');
             return;
           }
           settings = {};
           _ref = _this._fields;
-          for (field = _i = 0, _len = _ref.length; _i < _len; field = ++_i) {
-            _ = _ref[field];
+          for (_ in _ref) {
+            field = _ref[_];
             settings[field.name()] = field.value();
           }
           flowMgr = ContentFlow.FlowMgr.get();
           result = flowMgr.api().changeSnippetSettings(flowMgr.flow(), _this._snippet, settings);
           return result.addEventListener('load', function(ev) {
-            var errors, fieldName, flow, newElement, originalElement, response, _j, _len1, _ref1, _results;
+            var errors, fieldName, flow, newElement, originalElement, response, _i, _len, _ref1, _results;
             response = JSON.parse(ev.target.responseText);
             if (response.status === 'success') {
               flow = ContentFlow.FlowMgr.get().flow();
@@ -1733,7 +1735,7 @@
             } else {
               _ref1 = response.payload.errors;
               _results = [];
-              for (errors = _j = 0, _len1 = _ref1.length; _j < _len1; errors = ++_j) {
+              for (errors = _i = 0, _len = _ref1.length; _i < _len; errors = ++_i) {
                 fieldName = _ref1[errors];
                 if (_this._fields[fieldName]) {
                   _results.push(_this._fields[fieldName].errors(errors));

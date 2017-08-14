@@ -32,7 +32,11 @@ class ContentFlow.BaseAPI
 
     getSnippetSettingsForm: (flow, snippet) ->
         # Request a list of fields for the the snippet settings form
-        return @_callEndpoint('GET', 'snippet-settings', {flow: flow.id})
+        return @_callEndpoint(
+            'GET',
+            'snippet-settings',
+            {flow: flow.id, snippet: snippet.id}
+            )
 
     # POST
 
@@ -49,7 +53,7 @@ class ContentFlow.BaseAPI
         return @_callEndpoint(
             'POST',
             'add-global-snippet',
-            {flow: flow.id, global_snippet: globalSnippet.global_id}
+            {flow: flow.id, global_snippet: globalSnippet.globalId}
         )
 
     changeSnippetScope: (flow, snippet, scope, label=null) ->
@@ -104,6 +108,6 @@ class ContentFlow.BaseAPI
                     formData.append(k, v)
 
         xhr.open(method, "#{ @baseURL }#{ endpoint }#{ paramsStr }")
-        xhr.send()
+        xhr.send(formData)
 
         return xhr
