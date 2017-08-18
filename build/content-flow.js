@@ -163,7 +163,6 @@
       if (this._flow === flow) {
         return;
       }
-      ContentFlow.dimAllSnippetDOMElements();
       this._flow = flow;
       return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
     };
@@ -673,7 +672,6 @@
 
     function SelectFieldUI(name, label, required, initialValue, choices) {
       SelectFieldUI.__super__.constructor.call(this, name, label, required, initialValue);
-      console.log(initialValue);
       this._choices = choices;
     }
 
@@ -720,7 +718,7 @@
       this._domInput.setAttribute('id', this._name);
       this._domInput.setAttribute('name', this._name);
       this._domInput.setAttribute('type', 'text');
-      this._domInput.setAttribute('value', this._initialValue === void 0 ? '' : this._initialValue);
+      this._domInput.setAttribute('value', this._initialValue ? this._initialValue : '');
       return this._domElement.appendChild(this._domInput);
     };
 
@@ -1421,6 +1419,7 @@
     ListSnippetsUI.prototype.init = function() {
       var flowMgr, result;
       ListSnippetsUI.__super__.init.call(this);
+      ContentFlow.dimAllSnippetDOMElements();
       flowMgr = ContentFlow.FlowMgr.get();
       result = flowMgr.api().getSnippets(flowMgr.flow());
       return result.addEventListener('load', (function(_this) {
@@ -1722,7 +1721,7 @@
           flowMgr = ContentFlow.FlowMgr.get();
           result = flowMgr.api().changeSnippetSettings(flowMgr.flow(), _this._snippet, settings);
           return result.addEventListener('load', function(ev) {
-            var errors, fieldName, flow, newElement, originalElement, response, _i, _len, _ref1, _results;
+            var errors, fieldName, flow, newElement, originalElement, response, _ref1, _results;
             response = JSON.parse(ev.target.responseText);
             if (response.status === 'success') {
               flow = ContentFlow.FlowMgr.get().flow();
@@ -1735,8 +1734,8 @@
             } else {
               _ref1 = response.payload.errors;
               _results = [];
-              for (errors = _i = 0, _len = _ref1.length; _i < _len; errors = ++_i) {
-                fieldName = _ref1[errors];
+              for (fieldName in _ref1) {
+                errors = _ref1[fieldName];
                 if (_this._fields[fieldName]) {
                   _results.push(_this._fields[fieldName].errors(errors));
                 } else {

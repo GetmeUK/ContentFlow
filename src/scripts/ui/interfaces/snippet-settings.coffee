@@ -66,7 +66,7 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
                     ContentFlow.FlowMgr.get().loadInterface('list-snippets')
 
                 else
-                    for fieldName, errors in response.payload.errors
+                    for fieldName, errors of response.payload.errors
                         if @_fields[fieldName]
                             @_fields[fieldName].errors(errors)
 

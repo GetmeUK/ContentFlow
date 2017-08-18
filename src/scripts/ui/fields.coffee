@@ -194,8 +194,6 @@ class ContentFlow.SelectFieldUI extends ContentFlow.FieldUI
     constructor: (name, label, required, initialValue, choices) ->
         super(name, label, required, initialValue)
 
-        console.log initialValue
-
         # The choices for the select field
         @_choices = choices
 
@@ -240,6 +238,6 @@ class ContentFlow.TextFieldUI extends ContentFlow.FieldUI
         @_domInput.setAttribute('type', 'text')
         @_domInput.setAttribute(
             'value',
-            if @_initialValue is undefined then '' else @_initialValue
+            if @_initialValue then @_initialValue else ''
         )
         @_domElement.appendChild(@_domInput)

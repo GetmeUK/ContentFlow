@@ -25,6 +25,9 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
     init: () ->
         super()
 
+        # Dim any highlighted snippets
+        ContentFlow.dimAllSnippetDOMElements()
+
         # Load the list of the snippets within the content flow
         flowMgr = ContentFlow.FlowMgr.get()
         result = flowMgr.api().getSnippets(flowMgr.flow())
