@@ -1,7 +1,7 @@
 {
   "name": "content-flow",
   "description": "An extension to the ContentTools WYSIWYG editor to manage content flows",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "keywords": [
     "wysiwyg",
     "inline",
