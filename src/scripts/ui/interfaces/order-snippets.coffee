@@ -16,6 +16,15 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
 
         # Handle interactions
 
+        # Sorting
+        @_grabbed = null
+        @_grabbedHelper = null
+        @_grabbedOffset = null
+
+        document.addEventListener('mousedown', @_grab)
+        document.addEventListener('mousemove', @_drag)
+        document.addEventListener('mouseup', @_drop)
+
         # Confirm
         @_tools.confirm.addEventListener 'click', (ev) =>
 
@@ -71,27 +80,150 @@ class ContentFlow.OrderSnippetsUI extends ContentFlow.InterfaceUI
             @_body.unmount()
             @_body.mount()
 
-            # Set-up sorting
-            @_sorter = new ManhattanSortable.Sortable(@_body.domElement())
-
-            # Handle sort events
-            @_body.domElement().addEventListener 'mh-sortable--sorted', (ev) =>
-                @_newSnippetOrder = []
-                for child in ev.children
-                    id = child.dataset.snippetId
-                    @_newSnippetOrder.push(@_snippets[id])
-                @_orderSnippetsOnPage(@_newSnippetOrder)
-
     # Methods
 
     unmount: () ->
         super()
 
-        # If a sorter for the interface is defined then destroy it
-        if @_sorter
-            @_sorter.destroy()
+        # Remove document event listeners
+        document.removeEventListener('mousedown', @_grab)
+        document.removeEventListener('mousemove', @_drag)
+        document.removeEventListener('mouseup', @_drop)
 
     # Private methods
+
+    _drag: (ev) =>
+        # Handle snippet being dragged to a new position
+        unless @_grabbed
+            return
+
+        # Get the position of the pointer
+        pos = @_getEventPos(ev)
+
+        # Move the helper inline with the pointer
+        offset = [window.pageXOffset, window.pageYOffset]
+        left = "#{offset[0] + pos[0] - @_grabbedOffset[0]}px"
+        @_grabbedHelper.style.left = left
+        top = "#{offset[1] + pos[1] - @_grabbedOffset[1]}px"
+        @_grabbedHelper.style.top = top
+
+        # Is the pointer over sibling of the grabbed snippet?
+        target = document.elementFromPoint(pos[0], pos[1])
+        domSibling = null
+        for child in @_body.children()
+            domChild = child.domElement()
+
+            # Ignore the currently grabbed snippet
+            if domChild is @_grabbed
+                continue
+
+            if domChild.contains(target)
+                domSibling = domChild
+                break
+
+        if not domSibling
+            return
+
+        # Move the grabbed snippet into its new position
+        rect = domSibling.getBoundingClientRect()
+        overlap = [pos[0] - rect.left, pos[1] - rect.top]
+        @_body.domElement().removeChild(@_grabbed)
+        if overlap[1] >= (rect.height / 2)
+            domSibling = domSibling.nextElementSibling
+        @_body.domElement().insertBefore(@_grabbed, domSibling)
+
+    _drop: (ev) =>
+        # Handle snippet being dropped into a new position
+        unless @_grabbed
+            return
+
+        # Remove the ghost class from the grabbed element
+        @_grabbed.classList.remove('ct-snippet--ghost')
+        @_grabbed = null
+        @_grabbedOffset = null
+
+        # Remove the helper element
+        document.body.removeChild(@_grabbedHelper)
+        @_grabbedHelper = null
+
+        # Remove the sorting class from the container
+        @_body.domElement().classList.remove('ct-inlay__body--sorting')
+
+        # Update the order of the snippets
+        @_newSnippetOrder = []
+        for domChild in @_body.domElement().childNodes
+            unless domChild.nodeType is 1 # (Node.ELEMENT_NODE)
+                continue
+
+            id = domChild.dataset.snippetId
+            @_newSnippetOrder.push(@_snippets[id])
+
+        @_orderSnippetsOnPage(@_newSnippetOrder)
+
+    _getEventPos: (ev) ->
+        # Return the `[x, y]` coordinates for an event
+        return [ev.pageX - window.pageXOffset, ev.pageY - window.pageYOffset]
+
+    _grab: (ev) =>
+        # Handle the grabbing of a snippet to sort
+
+        # If this is a mouse down event then we check that the user pressed the
+        # primary mouse button (left).
+        if ev.type.toLowerCase() is 'mousedown' and not (ev.which is 1)
+            return
+
+        # Determine if the target of the event relates to the grabber for a
+        # sortable child.
+        grabbed = null
+        for child in @_body.children()
+            domChild = child.domElement()
+            if domChild.contains(ev.target)
+                grabbed = domChild
+                break
+
+        unless grabbed
+            return
+
+        # Store the grabbed snippet element
+        @_grabbed = grabbed
+
+        # Get x, y for event origin
+        pos = @_getEventPos(ev)
+
+        # Store the offset at which we grabbed the snippet
+        rect = @_grabbed.getBoundingClientRect()
+        @_grabbedOffset = [pos[0] - rect.left, pos[1] - rect.top]
+
+        # Create a helper to represent the grabbed child being dragged
+        @_grabbedHelper = grabbed.cloneNode(true)
+
+        # Copy CSS styles
+        css = document.defaultView.getComputedStyle(grabbed, '').cssText
+        @_grabbedHelper.style.cssText = css
+
+        # Set the position of the helper element to be absolute
+        @_grabbedHelper.style.position = 'absolute'
+
+        # Prevent the capture of pointer events
+        @_grabbedHelper.style['pointer-events'] = 'none'
+
+        # Move the helper inline with the pointer
+        @_grabbedHelper.style.left = "#{pos[0] - @_grabbedOffset[0]}px"
+        @_grabbedHelper.style.top = "#{pos[1] - @_grabbedOffset[1]}px"
+
+        # Add a helper class to the clone
+        @_grabbedHelper.classList.add('ct-snippet--helper')
+
+        # Add the helper
+        document.body.appendChild(@_grabbedHelper)
+
+        # Add the ghost class to the grabbed child to change its appearance
+        # within the list.
+        @_grabbed.classList.add('ct-snippet--ghost')
+
+        # Add a class to the container to indicate that the user is sorting
+        # the list.
+        @_body.domElement().classList.add('ct-inlay__body--sorting')
 
     _orderSnippetsOnPage: (snippets) ->
         # Set the DOM elements represented as snippets within the page to the

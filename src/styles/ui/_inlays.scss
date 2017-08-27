@@ -37,6 +37,14 @@
             &::-webkit-scrollbar-thumb {
                 background-color: rgba(0, 0, 0, 0.25);
             }
+
+            &--sorting {
+                .ct-snippet {
+                    cursor: -moz-grabbing;
+                    cursor: -webkit-grabbing;
+                    cursor: grabbing;
+                }
+            }
         }
     }
 

@@ -13,7 +13,7 @@ module.exports = (grunt) ->
 
             build:
                 files:
-                    'src/tmp/content-flow.js': [
+                    'build/content-flow.js': [
                         'src/scripts/namespace.coffee',
                         'src/scripts/flow-mgr.coffee',
                         'src/scripts/api/base.coffee',
@@ -74,13 +74,6 @@ module.exports = (grunt) ->
                 dest: 'build/content-flow.min.js'
 
         concat:
-            build:
-                src: [
-                    'node_modules/manhattan-sortable/dist/index.js',
-                    'src/tmp/content-flow.js'
-                ]
-                dest: 'build/content-flow.js'
-
             sandbox:
                 src: [
                     'src/tmp/sandbox.js'
@@ -121,7 +114,6 @@ module.exports = (grunt) ->
         'coffee:build'
         'sass:build'
         'cssnano:build'
-        'concat:build'
         'uglify:build'
         'clean:build'
     ]
