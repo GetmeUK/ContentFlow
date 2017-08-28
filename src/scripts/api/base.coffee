@@ -34,7 +34,7 @@ class ContentFlow.BaseAPI
         # Request a list of fields for the the snippet settings form
         return @_callEndpoint(
             'GET',
-            'snippet-settings',
+            'update-snippet-settings',
             {flow: flow.id, snippet: snippet.id}
             )
 

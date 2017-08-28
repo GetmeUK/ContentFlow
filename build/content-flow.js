@@ -284,7 +284,7 @@
     };
 
     BaseAPI.prototype.getSnippetSettingsForm = function(flow, snippet) {
-      return this._callEndpoint('GET', 'snippet-settings', {
+      return this._callEndpoint('GET', 'update-snippet-settings', {
         flow: flow.id,
         snippet: snippet.id
       });
