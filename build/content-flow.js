@@ -370,6 +370,9 @@
       switch (method.toLowerCase()) {
         case 'get':
           pairs = Object.keys(params).map(function(p) {
+            if (Array.isArray(params[p])) {
+              params[p] = JSON.stringify(params[p]);
+            }
             return [p, params[p]].map(encodeURIComponent).join('=');
           });
           paramsStr = "?" + (pairs.join("&")) + "&_=" + (Date.now());
@@ -380,6 +383,9 @@
           formData = new FormData();
           for (k in params) {
             v = params[k];
+            if (Array.isArray(v)) {
+              v = JSON.stringify(v);
+            }
             formData.append(k, v);
           }
       }

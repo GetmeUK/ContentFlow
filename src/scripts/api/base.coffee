@@ -104,12 +104,16 @@ class ContentFlow.BaseAPI
         switch method.toLowerCase()
             when 'get'
                 pairs = Object.keys(params).map (p) ->
+                    if Array.isArray(params[p])
+                        params[p] = JSON.stringify(params[p])
                     return [p, params[p]].map(encodeURIComponent).join('=')
                 paramsStr = "?#{ pairs.join("&") }&_=#{ Date.now() }"
 
             when 'delete', 'post', 'post'
                 formData = new FormData()
                 for k, v of params
+                    if Array.isArray(v)
+                        v = JSON.stringify(v)
                     formData.append(k, v)
 
         xhr.open(method, "#{ @baseURL }#{ endpoint }#{ paramsStr }")
