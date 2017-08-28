@@ -36,7 +36,7 @@ class ContentFlow.MakeSnippetGlobalUI extends ContentFlow.InterfaceUI
                 if response.status is 'success'
                     ContentFlow.FlowMgr.get().loadInterface('list-snippets')
                 else
-                    @_labelField.errors([response.errors.label])
+                    @_labelField.errors([response.payload.errors.label])
 
         # Cancel
         @_tools.cancel.addEventListener 'click', (ev) =>

@@ -1520,7 +1520,7 @@
             if (response.status === 'success') {
               return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
             } else {
-              return _this._labelField.errors([response.errors.label]);
+              return _this._labelField.errors([response.payload.errors.label]);
             }
           });
         };
