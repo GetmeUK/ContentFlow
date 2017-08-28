@@ -96,6 +96,11 @@ class ContentFlow.BaseAPI
         formData = null
         paramsStr = ''
 
+        # Merge params and base params
+        for k, v of @baseParams
+            if params[k] is undefined
+                params[k] = v
+
         switch method.toLowerCase()
             when 'get'
                 pairs = Object.keys(params).map (p) ->
