@@ -103,6 +103,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         editor = ContentTools.EditorApp.get()
 
         # Only show the editor tool if there are regions to edit
+        editor.syncRegions()
         if editor.domRegions().length
             editor.ignition().show()
 

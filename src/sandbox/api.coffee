@@ -199,7 +199,7 @@ class MockAPI extends ContentFlow.BaseAPI
             when 'snippets'
                 return @_mockResponse({'snippets': @_snippets[params['flow']]})
 
-            when 'snippet-scope'
+            when 'change-snippet-scope'
                 # Find the snippet
                 snippet = null
                 for otherSnippet in @_snippets[params['flow']]
@@ -239,7 +239,7 @@ class MockAPI extends ContentFlow.BaseAPI
 
                     return @_mockResponse()
 
-            when 'snippet-settings'
+            when 'update-snippet-settings'
                 if method.toLowerCase() is 'get'
 
                     # Build a dummy set of fields for the response

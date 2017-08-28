@@ -31,7 +31,7 @@ class ContentFlow.SnippetSettingsUI extends ContentFlow.InterfaceUI
 
             # Call the API to request the change to the snippet's settings
             flowMgr = ContentFlow.FlowMgr.get()
-            result = flowMgr.api().changeSnippetSettings(
+            result = flowMgr.api().updateSnippetSettings(
                 flowMgr.flow(),
                 @_snippet,
                 settings

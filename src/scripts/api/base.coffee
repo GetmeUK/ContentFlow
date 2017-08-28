@@ -60,16 +60,16 @@ class ContentFlow.BaseAPI
         # Change the scope of the given snippet
         return @_callEndpoint(
             'POST',
-            'snippet-scope',
+            'change-snippet-scope',
             {flow: flow.id, snippet: snippet.id, scope: scope, label: label}
         )
 
-    changeSnippetSettings: (flow, snippet, settings) ->
-        # Change the settings for the given snippet
+    updateSnippetSettings: (flow, snippet, settings) ->
+        # Update the settings for the given snippet
         params = {flow: flow.id, snippet: snippet.id}
         for k, v of settings
             params[k] = v
-        return @_callEndpoint('POST', 'snippet-settings', params)
+        return @_callEndpoint('POST', 'update-snippet-settings', params)
 
     deleteSnippet: (flow, snippet) ->
         # Delete a snippet from the given content flow

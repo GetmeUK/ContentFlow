@@ -151,6 +151,7 @@
       document.body.classList.remove('cf--flow-mgr-open');
       this._draw.close();
       editor = ContentTools.EditorApp.get();
+      editor.syncRegions();
       if (editor.domRegions().length) {
         return editor.ignition().show();
       }
@@ -307,7 +308,7 @@
       if (label == null) {
         label = null;
       }
-      return this._callEndpoint('POST', 'snippet-scope', {
+      return this._callEndpoint('POST', 'change-snippet-scope', {
         flow: flow.id,
         snippet: snippet.id,
         scope: scope,
@@ -315,7 +316,7 @@
       });
     };
 
-    BaseAPI.prototype.changeSnippetSettings = function(flow, snippet, settings) {
+    BaseAPI.prototype.updateSnippetSettings = function(flow, snippet, settings) {
       var k, params, v;
       params = {
         flow: flow.id,
@@ -325,7 +326,7 @@
         v = settings[k];
         params[k] = v;
       }
-      return this._callEndpoint('POST', 'snippet-settings', params);
+      return this._callEndpoint('POST', 'update-snippet-settings', params);
     };
 
     BaseAPI.prototype.deleteSnippet = function(flow, snippet) {
@@ -1823,7 +1824,7 @@
             settings[field.name()] = field.value();
           }
           flowMgr = ContentFlow.FlowMgr.get();
-          result = flowMgr.api().changeSnippetSettings(flowMgr.flow(), _this._snippet, settings);
+          result = flowMgr.api().updateSnippetSettings(flowMgr.flow(), _this._snippet, settings);
           return result.addEventListener('load', function(ev) {
             var errors, fieldName, flow, newElement, originalElement, response, _ref1, _results;
             response = JSON.parse(ev.target.responseText);
