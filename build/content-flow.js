@@ -352,13 +352,20 @@
     };
 
     BaseAPI.prototype._callEndpoint = function(method, endpoint, params) {
-      var formData, k, pairs, paramsStr, v, xhr;
+      var formData, k, pairs, paramsStr, v, xhr, _ref;
       if (params == null) {
         params = {};
       }
       xhr = new XMLHttpRequest();
       formData = null;
       paramsStr = '';
+      _ref = this.baseParams;
+      for (k in _ref) {
+        v = _ref[k];
+        if (params[k] === void 0) {
+          params[k] = v;
+        }
+      }
       switch (method.toLowerCase()) {
         case 'get':
           pairs = Object.keys(params).map(function(p) {
