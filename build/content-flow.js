@@ -667,7 +667,7 @@
       }
       if (value === void 0) {
         if (this._domInput.checked) {
-          return this.name;
+          return this.name();
         }
         return '';
       }
