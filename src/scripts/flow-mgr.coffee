@@ -15,6 +15,10 @@ class _FlowMgr extends ContentTools.ComponentUI
         # The content flow currently being managed
         @_flow = null
 
+        # The CSS query or list of DOM elements used to select the flows within
+        # the page.
+        @_flowQuery = null
+
         # Flag indicating if the app is currently open
         @_open = false
 
@@ -32,28 +36,13 @@ class _FlowMgr extends ContentTools.ComponentUI
         @_flows.addEventListener 'select', (ev) =>
             @flow(ev.detail().flow)
 
-    init: (queryOrDOMElements='[data-cf-flow]', api=null) ->
+    init: (flowQuery='[data-cf-flow]', api=null) ->
 
         # Initialize the manager
         editor = ContentTools.EditorApp.get()
 
         # Set the API
         @_api = api or new ContentFlow.BaseAPI()
-
-        # Select content flows within the page
-        @_domFlows = queryOrDOMElements
-        if typeof queryOrDOMElements == 'string' or
-                queryOrDOMElements instanceof String
-            @_domFlows = document.querySelectorAll(@_domFlows)
-
-        # Convert the flows found in the DOM into models and populate the flow
-        flows = []
-        for domFlow in @_domFlows
-            flows.push(new ContentFlow.FlowModel(
-                ContentFlow.getFlowIdFromDOMElement(domFlow),
-                ContentFlow.getFlowLabelFromDOMElement(domFlow)
-            ))
-        @_flows.flows(flows)
 
         # Handle toggling the manager open/closed
         @_toggle.addEventListener 'on', (ev) =>
@@ -69,13 +58,16 @@ class _FlowMgr extends ContentTools.ComponentUI
         editor.addEventListener 'stop', (ev) =>
             @_toggle.show()
 
+        # Sync the flows with the page
+        @syncFlows(flowQuery)
+
         # Mount the manager within the DOM
         if @_domFlows.length > 0
             @mount()
             @_toggle.show()
 
             # Select the first flow found
-            @flow(flows[0])
+            @flow(@_flows.flows()[0])
 
     # Read-only
 
@@ -106,7 +98,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         if editor.domRegions().length
             editor.ignition().show()
 
-    flow: (flow) ->
+    flow: (flow, force=false) ->
         # Get/set the current content flow being managed
 
         # If no flow is provided return the current flow
@@ -114,11 +106,12 @@ class _FlowMgr extends ContentTools.ComponentUI
             return @_flow
 
         # If the flow hasn't changed there's nothing to do so return
-        if @_flow is flow
+        if not force and @_flow is flow
             return
 
         # Update the flow and load the list snippets interface
         @_flow = flow
+        @_flows.select(flow)
         ContentFlow.FlowMgr.get().loadInterface('list-snippets')
 
     loadInterface: (name, args...) ->
@@ -168,6 +161,37 @@ class _FlowMgr extends ContentTools.ComponentUI
 
         # Open manager's UI
         @_draw.open()
+
+    syncFlows: (flowQuery) ->
+        # Synchronize the flows within the page
+
+        # If a new query or set of DOM elements have been provided set them
+        if flowQuery
+            @_flowQuery = flowQuery
+
+        # Select content flows within the page
+        @_domFlows = []
+        if @_flowQuery
+
+            # If a string is provided attempt to select the DOM flows using a
+            # CSS selector.
+            if typeof @_flowQuery == 'string' or
+                    @_flowQuery instanceof String
+                @_domFlows = document.querySelectorAll(@_flowQuery)
+
+            # Otherwise assume a valid list of DOM elements has been provided
+            else
+                @_domFlows = @_flowQuery
+
+            # Convert the flows found in the DOM into models and populate the
+            # flows UI compontent.
+            flows = []
+            for domFlow in @_domFlows
+                flows.push(new ContentFlow.FlowModel(
+                    ContentFlow.getFlowIdFromDOMElement(domFlow),
+                    ContentFlow.getFlowLabelFromDOMElement(domFlow)
+                ))
+            @_flows.flows(flows)
 
     unmount: () ->
         # Unmount the content flow manager

@@ -9,7 +9,4 @@ window.addEventListener 'load', () ->
     editor.init('[data-cf-snippet], [data-fixture]', 'data-cf-snippet')
 
     # Configure and initialize the CF flow manager
-    flowMgr.init(
-        queryOrDOMElements='[data-cf-flow]',
-        api=new MockAPI()
-        )
+    flowMgr.init(flowsQuery='[data-cf-flow]', api=new MockAPI())

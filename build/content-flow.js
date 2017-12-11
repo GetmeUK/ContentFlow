@@ -73,6 +73,7 @@
       _FlowMgr.__super__.constructor.call(this);
       this._api = null;
       this._flow = null;
+      this._flowQuery = null;
       this._open = false;
       this._draw = new ContentFlow.DrawUI();
       this.attach(this._draw);
@@ -87,27 +88,16 @@
       })(this));
     }
 
-    _FlowMgr.prototype.init = function(queryOrDOMElements, api) {
-      var domFlow, editor, flows, _i, _len, _ref;
-      if (queryOrDOMElements == null) {
-        queryOrDOMElements = '[data-cf-flow]';
+    _FlowMgr.prototype.init = function(flowQuery, api) {
+      var editor;
+      if (flowQuery == null) {
+        flowQuery = '[data-cf-flow]';
       }
       if (api == null) {
         api = null;
       }
       editor = ContentTools.EditorApp.get();
       this._api = api || new ContentFlow.BaseAPI();
-      this._domFlows = queryOrDOMElements;
-      if (typeof queryOrDOMElements === 'string' || queryOrDOMElements instanceof String) {
-        this._domFlows = document.querySelectorAll(this._domFlows);
-      }
-      flows = [];
-      _ref = this._domFlows;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        domFlow = _ref[_i];
-        flows.push(new ContentFlow.FlowModel(ContentFlow.getFlowIdFromDOMElement(domFlow), ContentFlow.getFlowLabelFromDOMElement(domFlow)));
-      }
-      this._flows.flows(flows);
       this._toggle.addEventListener('on', (function(_this) {
         return function(ev) {
           return _this.open();
@@ -128,10 +118,11 @@
           return _this._toggle.show();
         };
       })(this));
+      this.syncFlows(flowQuery);
       if (this._domFlows.length > 0) {
         this.mount();
         this._toggle.show();
-        return this.flow(flows[0]);
+        return this.flow(this._flows.flows()[0]);
       }
     };
 
@@ -157,14 +148,18 @@
       }
     };
 
-    _FlowMgr.prototype.flow = function(flow) {
+    _FlowMgr.prototype.flow = function(flow, force) {
+      if (force == null) {
+        force = false;
+      }
       if (flow === void 0) {
         return this._flow;
       }
-      if (this._flow === flow) {
+      if (!force && this._flow === flow) {
         return;
       }
       this._flow = flow;
+      this._flows.select(flow);
       return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
     };
 
@@ -211,6 +206,28 @@
       document.body.classList.add('cf--flow-mgr-open');
       ContentTools.EditorApp.get().ignition().hide();
       return this._draw.open();
+    };
+
+    _FlowMgr.prototype.syncFlows = function(flowQuery) {
+      var domFlow, flows, _i, _len, _ref;
+      if (flowQuery) {
+        this._flowQuery = flowQuery;
+      }
+      this._domFlows = [];
+      if (this._flowQuery) {
+        if (typeof this._flowQuery === 'string' || this._flowQuery instanceof String) {
+          this._domFlows = document.querySelectorAll(this._flowQuery);
+        } else {
+          this._domFlows = this._flowQuery;
+        }
+        flows = [];
+        _ref = this._domFlows;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          domFlow = _ref[_i];
+          flows.push(new ContentFlow.FlowModel(ContentFlow.getFlowIdFromDOMElement(domFlow), ContentFlow.getFlowLabelFromDOMElement(domFlow)));
+        }
+        return this._flows.flows(flows);
+      }
     };
 
     _FlowMgr.prototype.unmount = function() {
@@ -765,7 +782,7 @@
         force = false;
       }
       if (flows === void 0) {
-        return flow;
+        return this._flows.slice();
       }
       if (!force && JSON.stringify(this._flows) === JSON.stringify(flows)) {
         return;
@@ -799,6 +816,10 @@
       this._domElement.appendChild(this._domSelect);
       this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();
+    };
+
+    FlowsUI.prototype.select = function(flow) {
+      return this._domSelect.value = flow.id;
     };
 
     FlowsUI.prototype.unmount = function() {
@@ -1346,15 +1367,16 @@
               result = flowMgr.api().addSnippet(flowMgr.flow(), ev.detail().snippet.type);
               return result.addEventListener('load', (function(_this) {
                 return function(ev) {
-                  var domFlow, domSnippet;
-                  flow = ContentFlow.FlowMgr.get().flow();
+                  var domFlow, domSnippet, force;
+                  flow = flowMgr.flow();
                   payload = JSON.parse(ev.target.responseText).payload;
                   domSnippet = document.createElement('div');
                   domSnippet.innerHTML = payload['html'];
                   domSnippet = domSnippet.children[0];
                   domFlow = ContentFlow.getFlowDOMelement(flow);
                   domFlow.appendChild(domSnippet);
-                  return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
+                  flowMgr.syncFlows();
+                  return flowMgr.flow(flow, force = true);
                 };
               })(this));
             });
@@ -1378,15 +1400,16 @@
                 result = flowMgr.api().addGlobalSnippet(flowMgr.flow(), ev.detail().snippet);
                 return result.addEventListener('load', (function(_this) {
                   return function(ev) {
-                    var domFlow, domSnippet;
-                    flow = ContentFlow.FlowMgr.get().flow();
+                    var domFlow, domSnippet, force;
+                    flow = flowMgr.flow();
                     payload = JSON.parse(ev.target.responseText).payload;
                     domSnippet = document.createElement('div');
                     domSnippet.innerHTML = payload['html'];
                     domSnippet = domSnippet.children[0];
                     domFlow = ContentFlow.getFlowDOMelement(flow);
                     domFlow.appendChild(domSnippet);
-                    return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
+                    flowMgr.syncFlows();
+                    return flowMgr.flow(flow, force = true);
                   };
                 })(this));
               });
@@ -1478,10 +1501,11 @@
                 result = flowMgr.api().deleteSnippet(flowMgr.flow(), ev.detail().snippet);
                 _removeSnippet = function(flow, snippet) {
                   return function(ev) {
-                    var domSnippet;
+                    var domSnippet, force;
                     domSnippet = ContentFlow.getSnippetDOMElement(flow, snippet);
                     domSnippet.remove();
-                    return ContentFlow.FlowMgr.get().loadInterface('list-snippets');
+                    flowMgr.syncFlows();
+                    return flowMgr.flow(flow, force = true);
                   };
                 };
                 return result.addEventListener('load', _removeSnippet(flowMgr.flow(), ev.detail().snippet));

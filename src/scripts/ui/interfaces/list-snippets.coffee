@@ -105,10 +105,14 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
                                 )
                                 domSnippet.remove()
 
-                                # Show the list of snippets now in the flow
-                                ContentFlow.FlowMgr.get().loadInterface(
-                                    'list-snippets'
-                                )
+                                # Show the list of snippets now in the flow. We
+                                # re-sync the page flows in case a flow was
+                                # removed as part of the snippet, then we force
+                                # reselect this flow which ensures the correct
+                                # flow is selected and triggers a list-snippets
+                                # interface load.
+                                flowMgr.syncFlows()
+                                flowMgr.flow(flow, force=true)
 
                         result.addEventListener(
                             'load',

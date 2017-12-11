@@ -134,6 +134,11 @@ class MockAPI extends ContentFlow.BaseAPI
                     'html': """
 <div class="content-snippet" data-cf-snippet="#{ snippet.id }">
     <p>This is a new snippet</p>
+    <section
+        data-cf-flow="new"
+        data-cf-flow-label="New"
+        >
+    </section>
 </div>
                     """
                 })

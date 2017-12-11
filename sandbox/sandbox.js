@@ -134,7 +134,7 @@
           };
           this._snippets[params['flow']].push(snippet);
           return this._mockResponse({
-            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a new snippet</p>\n</div>"
+            'html': "<div class=\"content-snippet\" data-cf-snippet=\"" + snippet.id + "\">\n    <p>This is a new snippet</p>\n    <section\n        data-cf-flow=\"new\"\n        data-cf-flow-label=\"New\"\n        >\n    </section>\n</div>"
           });
         case 'add-global-snippet':
           globalSnippet = null;
@@ -294,11 +294,11 @@
   })(ContentFlow.BaseAPI);
 
   window.addEventListener('load', function() {
-    var api, editor, flowMgr, queryOrDOMElements;
+    var api, editor, flowMgr, flowsQuery;
     editor = ContentTools.EditorApp.get();
     flowMgr = ContentFlow.FlowMgr.get();
     editor.init('[data-cf-snippet], [data-fixture]', 'data-cf-snippet');
-    return flowMgr.init(queryOrDOMElements = '[data-cf-flow]', api = new MockAPI());
+    return flowMgr.init(flowsQuery = '[data-cf-flow]', api = new MockAPI());
   });
 
 }).call(this);

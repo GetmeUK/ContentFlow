@@ -22,7 +22,7 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
 
         # If no flows value is provided return the current value
         if flows is undefined
-            return flow
+            return @_flows.slice()
 
         # If the flows hasn't changed there's nothing to do so return
         if not force and JSON.stringify(@_flows) is JSON.stringify(flows)
@@ -58,6 +58,10 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
         # Mount flows to the DOM
         @parent().domElement().appendChild(@_domElement)
         @_addDOMEventListeners()
+
+    select: (flow) ->
+        # Select the given flow
+        @_domSelect.value = flow.id
 
     unmount: () ->
         super()

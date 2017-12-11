@@ -64,7 +64,7 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                         ev.detail().snippet.type
                     )
                     result.addEventListener 'load', (ev) =>
-                        flow = ContentFlow.FlowMgr.get().flow()
+                        flow = flowMgr.flow()
 
                         # Unpack the response
                         payload = JSON.parse(ev.target.responseText).payload
@@ -76,8 +76,13 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                         domFlow = ContentFlow.getFlowDOMelement(flow)
                         domFlow.appendChild(domSnippet)
 
-                        # Show the list of snippets now in the flow
-                        ContentFlow.FlowMgr.get().loadInterface('list-snippets')
+                        # Show the list of snippets now in the flow. We re-sync
+                        # the page flows in case a new flow was added as part
+                        # of the snippet, then we force reselect this flow which
+                        # ensures the correct flow is selected and triggers a
+                        # list snippets interface load.
+                        flowMgr.syncFlows()
+                        flowMgr.flow(flow, force=true)
 
             @_body.attach(@_local)
 
@@ -111,7 +116,7 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                             ev.detail().snippet
                         )
                         result.addEventListener 'load', (ev) =>
-                            flow = ContentFlow.FlowMgr.get().flow()
+                            flow = flowMgr.flow()
 
                             # Unpack the response
                             payload = JSON.parse(ev.target.responseText).payload
@@ -123,10 +128,14 @@ class ContentFlow.AddSnippetUI extends ContentFlow.InterfaceUI
                             domFlow = ContentFlow.getFlowDOMelement(flow)
                             domFlow.appendChild(domSnippet)
 
-                            # Show the list of snippets now in the flow
-                            ContentFlow.FlowMgr.get().loadInterface(
-                                'list-snippets'
-                            )
+                            # Show the list of snippets now in the flow. We
+                            # re-sync the page flows in case a new flow was
+                            # added as part of the snippet, then we force
+                            # reselect this flow which ensures the correct flow
+                            # is selected and triggers a list snippets interface
+                            # load.
+                            flowMgr.syncFlows()
+                            flowMgr.flow(flow, force=true)
 
                 if @_global.children().length > 0
                     @_body.attach(@_global)
