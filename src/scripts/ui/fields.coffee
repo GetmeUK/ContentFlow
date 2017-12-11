@@ -178,7 +178,7 @@ class ContentFlow.BooleanFieldUI extends ContentFlow.FieldUI
         # If no heading value is provided return the current heading
         if value is undefined
             if @_domInput.checked
-                return @name
+                return @name()
             return ''
 
         # Set the value
