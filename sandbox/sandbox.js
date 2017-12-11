@@ -191,7 +191,7 @@
           return this._mockResponse({
             'snippets': this._snippets[params['flow']]
           });
-        case 'snippet-scope':
+        case 'change-snippet-scope':
           snippet = null;
           _ref4 = this._snippets[params['flow']];
           for (_n = 0, _len5 = _ref4.length; _n < _len5; _n++) {
@@ -227,7 +227,7 @@
             return this._mockResponse();
           }
           break;
-        case 'snippet-settings':
+        case 'update-snippet-settings':
           if (method.toLowerCase() === 'get') {
             fields = [
               {
@@ -294,11 +294,11 @@
   })(ContentFlow.BaseAPI);
 
   window.addEventListener('load', function() {
-    var api, editor, flowMgr, idProp, queryOrDOMElements;
+    var api, editor, flowMgr, queryOrDOMElements;
     editor = ContentTools.EditorApp.get();
     flowMgr = ContentFlow.FlowMgr.get();
     editor.init('[data-cf-snippet], [data-fixture]', 'data-cf-snippet');
-    return flowMgr.init(queryOrDOMElements = '[data-cf-flow]', idProp = 'data-cf-flow', api = new MockAPI());
+    return flowMgr.init(queryOrDOMElements = '[data-cf-flow]', api = new MockAPI());
   });
 
 }).call(this);

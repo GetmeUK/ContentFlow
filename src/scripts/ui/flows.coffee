@@ -17,7 +17,7 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
 
     # Methods
 
-    flows: (flows) ->
+    flows: (flows, force=false) ->
         # Get/set the flows
 
         # If no flows value is provided return the current value
@@ -25,7 +25,7 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
             return flow
 
         # If the flows hasn't changed there's nothing to do so return
-        if JSON.stringify(@_flows) is JSON.stringify(flows)
+        if not force and JSON.stringify(@_flows) is JSON.stringify(flows)
             return
 
         # Set the new list of flows
@@ -40,7 +40,7 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
             for flow in @_flows
                 domOption = document.createElement('option')
                 domOption.setAttribute('value', flow.id)
-                domOption.textContent = flow.id
+                domOption.textContent = flow.label
                 @_domSelect.appendChild(domOption)
 
     mount: () ->
@@ -52,13 +52,7 @@ class ContentFlow.FlowsUI extends ContentTools.ComponentUI
         @_domSelect.classList.add('ct-flows__select')
         @_domSelect.setAttribute('name', 'flows')
 
-        # Options
-        for flow in @_flows
-            domOption = document.createElement('option')
-            domOption.setAttribute('value', flow.id)
-            domOption.textContent = flow.id
-            @_domSelect.appendChild(domOption)
-
+        @flows(@_flows, force=true)
         @_domElement.appendChild(@_domSelect)
 
         # Mount flows to the DOM

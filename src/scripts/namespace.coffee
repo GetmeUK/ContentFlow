@@ -24,6 +24,10 @@ ContentFlow =
         # Return the Id of a content flow from a DOM element
         return element.getAttribute('data-cf-flow')
 
+    getFlowLabelFromDOMElement: (element) ->
+        # Return the label of a content flow from a DOM element
+        return element.getAttribute('data-cf-flow-label')
+
     getSnippetCls: (flow) ->
         # Return the snippet model class to use for the application
         return ContentFlow.SnippetModel

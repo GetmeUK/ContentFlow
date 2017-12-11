@@ -5,10 +5,13 @@ class ContentFlow.FlowModel
     # page to be managed through smaller sections of prefabricated content
     # know as snippets.
 
-    constructor: (id, snippetTypes=[]) ->
+    constructor: (id, label=null, snippetTypes=[]) ->
 
         # A unique Id for the flow (at least within the page)
         @id = id
+
+        # A human readable label for the flow
+        @label = label or id
 
         # A list of snippet types available in the flow
         @snippetTypes = snippetTypes

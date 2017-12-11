@@ -11,6 +11,5 @@ window.addEventListener 'load', () ->
     # Configure and initialize the CF flow manager
     flowMgr.init(
         queryOrDOMElements='[data-cf-flow]',
-        idProp='data-cf-flow',
         api=new MockAPI()
         )

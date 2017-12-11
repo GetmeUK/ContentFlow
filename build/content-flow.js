@@ -32,6 +32,9 @@
     getFlowIdFromDOMElement: function(element) {
       return element.getAttribute('data-cf-flow');
     },
+    getFlowLabelFromDOMElement: function(element) {
+      return element.getAttribute('data-cf-flow-label');
+    },
     getSnippetCls: function(flow) {
       return ContentFlow.SnippetModel;
     },
@@ -84,13 +87,10 @@
       })(this));
     }
 
-    _FlowMgr.prototype.init = function(queryOrDOMElements, idProp, api) {
+    _FlowMgr.prototype.init = function(queryOrDOMElements, api) {
       var domFlow, editor, flows, _i, _len, _ref;
       if (queryOrDOMElements == null) {
         queryOrDOMElements = '[data-cf-flow]';
-      }
-      if (idProp == null) {
-        idProp = 'data-cf-flow';
       }
       if (api == null) {
         api = null;
@@ -105,7 +105,7 @@
       _ref = this._domFlows;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         domFlow = _ref[_i];
-        flows.push(new ContentFlow.FlowModel(domFlow.getAttribute(idProp)));
+        flows.push(new ContentFlow.FlowModel(ContentFlow.getFlowIdFromDOMElement(domFlow), ContentFlow.getFlowLabelFromDOMElement(domFlow)));
       }
       this._flows.flows(flows);
       this._toggle.addEventListener('on', (function(_this) {
@@ -399,11 +399,15 @@
   })();
 
   ContentFlow.FlowModel = (function() {
-    function FlowModel(id, snippetTypes) {
+    function FlowModel(id, label, snippetTypes) {
+      if (label == null) {
+        label = null;
+      }
       if (snippetTypes == null) {
         snippetTypes = [];
       }
       this.id = id;
+      this.label = label || id;
       this.snippetTypes = snippetTypes;
     }
 
@@ -755,12 +759,15 @@
       return this._domSelect;
     };
 
-    FlowsUI.prototype.flows = function(flows) {
+    FlowsUI.prototype.flows = function(flows, force) {
       var domOption, flow, _i, _len, _ref, _results;
+      if (force == null) {
+        force = false;
+      }
       if (flows === void 0) {
         return flow;
       }
-      if (JSON.stringify(this._flows) === JSON.stringify(flows)) {
+      if (!force && JSON.stringify(this._flows) === JSON.stringify(flows)) {
         return;
       }
       this._flows = flows;
@@ -774,7 +781,7 @@
           flow = _ref[_i];
           domOption = document.createElement('option');
           domOption.setAttribute('value', flow.id);
-          domOption.textContent = flow.id;
+          domOption.textContent = flow.label;
           _results.push(this._domSelect.appendChild(domOption));
         }
         return _results;
@@ -782,20 +789,13 @@
     };
 
     FlowsUI.prototype.mount = function() {
-      var domOption, flow, _i, _len, _ref;
+      var force;
       FlowsUI.__super__.mount.call(this);
       this._domElement = this.constructor.createDiv(['ct-flows']);
       this._domSelect = document.createElement('select');
       this._domSelect.classList.add('ct-flows__select');
       this._domSelect.setAttribute('name', 'flows');
-      _ref = this._flows;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        flow = _ref[_i];
-        domOption = document.createElement('option');
-        domOption.setAttribute('value', flow.id);
-        domOption.textContent = flow.id;
-        this._domSelect.appendChild(domOption);
-      }
+      this.flows(this._flows, force = true);
       this._domElement.appendChild(this._domSelect);
       this.parent().domElement().appendChild(this._domElement);
       return this._addDOMEventListeners();

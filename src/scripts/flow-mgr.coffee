@@ -32,11 +32,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         @_flows.addEventListener 'select', (ev) =>
             @flow(ev.detail().flow)
 
-    init: (
-        queryOrDOMElements='[data-cf-flow]',
-        idProp='data-cf-flow',
-        api=null
-        ) ->
+    init: (queryOrDOMElements='[data-cf-flow]', api=null) ->
 
         # Initialize the manager
         editor = ContentTools.EditorApp.get()
@@ -53,7 +49,10 @@ class _FlowMgr extends ContentTools.ComponentUI
         # Convert the flows found in the DOM into models and populate the flow
         flows = []
         for domFlow in @_domFlows
-            flows.push(new ContentFlow.FlowModel(domFlow.getAttribute(idProp)))
+            flows.push(new ContentFlow.FlowModel(
+                ContentFlow.getFlowIdFromDOMElement(domFlow),
+                ContentFlow.getFlowLabelFromDOMElement(domFlow)
+            ))
         @_flows.flows(flows)
 
         # Handle toggling the manager open/closed
