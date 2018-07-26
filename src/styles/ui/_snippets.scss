@@ -94,17 +94,16 @@
         &__tool {
             $button-size: 32px;
 
+            align-items: center;
             bottom: 8px;
             cursor: pointer;
-            display: block;
+            display: flex;
             height: $button-size;
+            justify-content: center;
             right: 8px;
             position: absolute;
             width: $button-size;
             z-index: 1;
-            @include align-items(center);
-            @include display(flex);
-            @include justify-content(center);
 
             &:hover {
                 &::before {
