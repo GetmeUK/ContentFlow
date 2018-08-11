@@ -180,6 +180,19 @@
                 }
             }
         }
+
+        &--permanent {
+            .ct-snippet__tool {
+
+                &--settings {
+                    right: 46px;
+                }
+
+                &--scope {
+                    right: 8px;
+                }
+            }
+        }
     }
 }
 

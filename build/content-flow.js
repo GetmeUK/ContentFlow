@@ -1097,10 +1097,11 @@
   ContentFlow.SnippetUI = (function(_super) {
     __extends(SnippetUI, _super);
 
-    function SnippetUI(snippet, behaviour) {
+    function SnippetUI(snippet, behaviour, flags) {
       SnippetUI.__super__.constructor.call(this);
       this._snippet = snippet;
       this._behaviour = behaviour;
+      this._flags = flags;
     }
 
     SnippetUI.prototype.mount = function() {
@@ -1129,9 +1130,14 @@
         this._domScopeTool = this.constructor.createDiv(['ct-snippet__tool', 'ct-snippet__tool--scope']);
         this._domScopeTool.setAttribute('data-ct-tooltip', ContentEdit._('Scope'));
         this._domTools.appendChild(this._domScopeTool);
-        this._domDeleteTool = this.constructor.createDiv(['ct-snippet__tool', 'ct-snippet__tool--delete']);
-        this._domDeleteTool.setAttribute('data-ct-tooltip', ContentEdit._('Delete'));
-        this._domTools.appendChild(this._domDeleteTool);
+        if (this._flags.permanent) {
+          this._domElement.classList.add('ct-snippet--permanent');
+        } else {
+          this._domElement.classList.remove('ct-snippet--permanent');
+          this._domDeleteTool = this.constructor.createDiv(['ct-snippet__tool', 'ct-snippet__tool--delete']);
+          this._domDeleteTool.setAttribute('data-ct-tooltip', ContentEdit._('Delete'));
+          this._domTools.appendChild(this._domDeleteTool);
+        }
         this._domElement.appendChild(this._domTools);
       }
       this.parent().domElement().appendChild(this._domElement);
@@ -1169,13 +1175,15 @@
             }));
           };
         })(this));
-        return this._domDeleteTool.addEventListener('click', (function(_this) {
-          return function(ev) {
-            return _this.dispatchEvent(_this.createEvent('delete', {
-              snippet: _this._snippet
-            }));
-          };
-        })(this));
+        if (this._domDeleteTool) {
+          return this._domDeleteTool.addEventListener('click', (function(_this) {
+            return function(ev) {
+              return _this.dispatchEvent(_this.createEvent('delete', {
+                snippet: _this._snippet
+              }));
+            };
+          })(this));
+        }
       } else if (this._behaviour === 'pick') {
         return this._domElement.addEventListener('click', (function(_this) {
           return function(ev) {
@@ -1439,8 +1447,6 @@
         order: new ContentFlow.InlayToolUI('order', 'Order', true),
         add: new ContentFlow.InlayToolUI('add', 'Add', true)
       };
-      this._header.tools().attach(this._tools.order);
-      this._header.tools().attach(this._tools.add);
       this._tools.order.addEventListener('click', (function(_this) {
         return function(ev) {
           return ContentFlow.FlowMgr.get().loadInterface('order-snippets');
@@ -1461,20 +1467,38 @@
       result = flowMgr.api().getSnippets(flowMgr.flow());
       return result.addEventListener('load', (function(_this) {
         return function(ev) {
-          var child, flow, payload, snippet, snippetCls, snippetData, uiSnippet, _i, _j, _len, _len1, _ref, _ref1;
+          var child, flow, flowElm, maxSnippets, payload, snippet, snippetCls, snippetData, snippetElm, uiSnippet, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+          flow = ContentFlow.FlowMgr.get().flow();
           payload = JSON.parse(ev.target.responseText).payload;
           _ref = _this._body.children;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             child = _ref[_i];
             _this._body.detach(child);
           }
-          flow = ContentFlow.FlowMgr.get().flow();
-          snippetCls = ContentFlow.getSnippetCls(flow);
-          _ref1 = payload.snippets;
+          flowElm = ContentFlow.getFlowDOMelement(flow);
+          maxSnippets = parseInt(flowElm.dataset.cfFlowMaxSnippets) || 0;
+          _ref1 = _this._header.tools().children;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            snippetData = _ref1[_j];
+            child = _ref1[_j];
+            _this._header.tools().detatch(child);
+          }
+          if (maxSnippets === 0 || payload.snippets.length < maxSnippets) {
+            _this._header.tools().attach(_this._tools.add);
+          }
+          if (flowElm.dataset.cfFlowFrozen === void 0) {
+            _this._header.tools().attach(_this._tools.order);
+          }
+          _this._header.unmount();
+          _this._header.mount();
+          snippetCls = ContentFlow.getSnippetCls(flow);
+          _ref2 = payload.snippets;
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            snippetData = _ref2[_k];
             snippet = snippetCls.fromJSONType(flow, snippetData);
-            uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage');
+            snippetElm = ContentFlow.getSnippetDOMElement(flow, snippet);
+            uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage', {
+              'permanent': snippetElm.dataset.cfSnippetPermanent !== void 0
+            });
             _this._body.attach(uiSnippet);
             uiSnippet.addEventListener('over', function(ev) {
               return ContentFlow.highlightSnippetDOMElement(ContentFlow.FlowMgr.get().flow(), ev.detail().snippet);

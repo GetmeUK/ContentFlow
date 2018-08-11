@@ -3,7 +3,7 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
 
     # A UI component representing a snippet within a content flow
 
-    constructor: (snippet, behaviour) ->
+    constructor: (snippet, behaviour, flags) ->
         super()
 
         # The snippet the component represents
@@ -18,6 +18,9 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
         # - 'order'  allow the snippet to be dragged within a its siblings to
         #            changes its position (the order).
         @_behaviour = behaviour
+
+        # A set of flags which further modify the behaviour of the snippet
+        @_flags = flags
 
     # Methods
 
@@ -52,6 +55,7 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
 
         # Tools (settings, scope, delete)
         if @_behaviour is 'manage'
+
             @_domTools = @constructor.createDiv(['ct-snippet__tools'])
 
             # Settings
@@ -77,15 +81,21 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
             @_domTools.appendChild(@_domScopeTool)
 
             # Delete
-            @_domDeleteTool = @constructor.createDiv([
-                'ct-snippet__tool',
-                'ct-snippet__tool--delete'
-            ])
-            @_domDeleteTool.setAttribute(
-                'data-ct-tooltip',
-                ContentEdit._('Delete')
-            )
-            @_domTools.appendChild(@_domDeleteTool)
+            if @_flags.permanent
+                @_domElement.classList.add('ct-snippet--permanent')
+
+            else
+                @_domElement.classList.remove('ct-snippet--permanent')
+
+                @_domDeleteTool = @constructor.createDiv([
+                    'ct-snippet__tool',
+                    'ct-snippet__tool--delete'
+                ])
+                @_domDeleteTool.setAttribute(
+                    'data-ct-tooltip',
+                    ContentEdit._('Delete')
+                )
+                @_domTools.appendChild(@_domDeleteTool)
 
             @_domElement.appendChild(@_domTools)
 
@@ -114,8 +124,11 @@ class ContentFlow.SnippetUI extends ContentTools.ComponentUI
             @_domScopeTool.addEventListener 'click', (ev) =>
                 @dispatchEvent(@createEvent('scope', {snippet: @_snippet}))
 
-            @_domDeleteTool.addEventListener 'click', (ev) =>
-                @dispatchEvent(@createEvent('delete', {snippet: @_snippet}))
+            if @_domDeleteTool
+                @_domDeleteTool.addEventListener 'click', (ev) =>
+                    @dispatchEvent(
+                        @createEvent('delete', {snippet: @_snippet})
+                    )
 
         else if @_behaviour is 'pick'
             # Add event handlers for pick

@@ -11,8 +11,6 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
             order: new ContentFlow.InlayToolUI('order', 'Order', true),
             add: new ContentFlow.InlayToolUI('add', 'Add', true)
         }
-        @_header.tools().attach(@_tools.order)
-        @_header.tools().attach(@_tools.add)
 
         # Handle interactions
 
@@ -32,6 +30,7 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
         flowMgr = ContentFlow.FlowMgr.get()
         result = flowMgr.api().getSnippets(flowMgr.flow())
         result.addEventListener 'load', (ev) =>
+            flow = ContentFlow.FlowMgr.get().flow()
 
             # Unpack the response
             payload = JSON.parse(ev.target.responseText).payload
@@ -40,13 +39,39 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
             for child in @_body.children
                 @_body.detach(child)
 
-            # Add snippets
-            flow = ContentFlow.FlowMgr.get().flow()
-            snippetCls = ContentFlow.getSnippetCls(flow)
+            # Set up the tools available for the flow
+            flowElm = ContentFlow.getFlowDOMelement(flow)
+            maxSnippets = parseInt(flowElm.dataset.cfFlowMaxSnippets) or 0
 
+            # Detatch all tools
+            for child in @_header.tools().children
+                @_header.tools().detatch(child)
+
+            # Add the 'add' tool if the flow isn't full
+            if maxSnippets == 0 or payload.snippets.length < maxSnippets
+                @_header.tools().attach(@_tools.add)
+
+            # Add the 'order' tool if the flow isn't frozen
+            if flowElm.dataset.cfFlowFrozen == undefined
+                @_header.tools().attach(@_tools.order)
+
+            @_header.unmount()
+            @_header.mount()
+
+            # Add snippets
+            snippetCls = ContentFlow.getSnippetCls(flow)
             for snippetData in payload.snippets
                 snippet = snippetCls.fromJSONType(flow, snippetData)
-                uiSnippet = new ContentFlow.SnippetUI(snippet, 'manage')
+                snippetElm = ContentFlow.getSnippetDOMElement(flow, snippet)
+
+                uiSnippet = new ContentFlow.SnippetUI(
+                    snippet,
+                    'manage',
+                    {
+                        'permanent':
+                            snippetElm.dataset.cfSnippetPermanent != undefined
+                    }
+                )
                 @_body.attach(uiSnippet)
 
                 # Handle interactions
@@ -127,7 +152,6 @@ class ContentFlow.ListSnippetsUI extends ContentFlow.InterfaceUI
 
     safeToClose: () ->
         return true
-
 
 # Register the interface with the content flow manager
 ContentFlow.FlowMgr.getCls().registerInterface(
