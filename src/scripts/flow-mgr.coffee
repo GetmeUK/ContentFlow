@@ -183,6 +183,20 @@ class _FlowMgr extends ContentTools.ComponentUI
             else
                 @_domFlows = @_flowQuery
 
+            # Sort the flows based on their position attribute
+            @_domFlows = Array.from(@_domFlows)
+
+            cmp = (a, b) ->
+                aPos = parseFloat(a.dataset.cfFlowPosition)
+                if aPos is NaN
+                    aPos = 999999
+                bPos = parseFloat(b.dataset.cfFlowPosition)
+                if bPos is NaN
+                    bPos = 999999
+                return aPos - bPos
+
+            @_domFlows.sort(cmp)
+
             # Convert the flows found in the DOM into models and populate the
             # flows UI compontent.
             flows = []

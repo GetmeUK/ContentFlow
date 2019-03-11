@@ -209,7 +209,7 @@
     };
 
     _FlowMgr.prototype.syncFlows = function(flowQuery) {
-      var domFlow, flows, _i, _len, _ref;
+      var cmp, domFlow, flows, _i, _len, _ref;
       if (flowQuery) {
         this._flowQuery = flowQuery;
       }
@@ -220,6 +220,20 @@
         } else {
           this._domFlows = this._flowQuery;
         }
+        this._domFlows = Array.from(this._domFlows);
+        cmp = function(a, b) {
+          var aPos, bPos;
+          aPos = parseFloat(a.dataset.cfFlowPosition);
+          if (aPos === NaN) {
+            aPos = 999999;
+          }
+          bPos = parseFloat(b.dataset.cfFlowPosition);
+          if (bPos === NaN) {
+            bPos = 999999;
+          }
+          return aPos - bPos;
+        };
+        this._domFlows.sort(cmp);
         flows = [];
         _ref = this._domFlows;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
