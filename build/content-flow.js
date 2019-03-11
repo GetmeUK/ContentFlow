@@ -224,11 +224,11 @@
         cmp = function(a, b) {
           var aPos, bPos;
           aPos = parseFloat(a.dataset.cfFlowPosition);
-          if (aPos === NaN) {
+          if (isNaN(aPos)) {
             aPos = 999999;
           }
           bPos = parseFloat(b.dataset.cfFlowPosition);
-          if (bPos === NaN) {
+          if (isNaN(bPos)) {
             bPos = 999999;
           }
           return aPos - bPos;

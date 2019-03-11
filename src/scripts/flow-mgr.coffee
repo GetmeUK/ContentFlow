@@ -188,10 +188,10 @@ class _FlowMgr extends ContentTools.ComponentUI
 
             cmp = (a, b) ->
                 aPos = parseFloat(a.dataset.cfFlowPosition)
-                if aPos is NaN
+                if isNaN(aPos)
                     aPos = 999999
                 bPos = parseFloat(b.dataset.cfFlowPosition)
-                if bPos is NaN
+                if isNaN(bPos)
                     bPos = 999999
                 return aPos - bPos
 
