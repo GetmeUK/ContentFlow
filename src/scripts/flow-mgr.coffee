@@ -55,7 +55,7 @@ class _FlowMgr extends ContentTools.ComponentUI
         editor.addEventListener 'start', (ev) =>
             @_toggle.hide()
 
-        editor.addEventListener 'stop', (ev) =>
+        editor.addEventListener 'stopped', (ev) =>
             @_toggle.show()
 
         # Sync the flows with the page

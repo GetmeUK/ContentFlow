@@ -113,7 +113,7 @@
           return _this._toggle.hide();
         };
       })(this));
-      editor.addEventListener('stop', (function(_this) {
+      editor.addEventListener('stopped', (function(_this) {
         return function(ev) {
           return _this._toggle.show();
         };
